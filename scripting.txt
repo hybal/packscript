@@ -1,0 +1,58 @@
+Required features
+
+1. Turing complete
+2. Declare config information
+3. able to interact with the file system
+
+
+type Version(int super = 0, int major, int minor, int patch) = (super, major, minor, patch);
+
+interface Project{
+    name: String;
+    id: String;
+    language: String;
+    version: Version | String;
+    tags: [String];
+    description:? (String | File) = File("README.md"); #optional with default
+    icon:? File; #optional without default
+}
+
+interface System{ # these would be defined in the stdlib
+    architectures: [String];
+    platforms: [String];
+
+}
+
+
+#in the user file
+import std::lib; #not the actual name just an example. The majority of functions will likely be included automatically
+impl Project{
+    set name = "Test Project";
+    set id = "test";
+    set language = "C";
+    set tags = ["test", "project", "example"];
+    set version = Version(0, 0, 1); 
+}
+impl System{
+    set architectures = ["any"];
+    set platforms = ["any"];
+}
+
+impl test { #uses the id set in Project
+    use "some_package", Version("latest");
+}
+
+task build { #tasks can be run from the command line (and from other tasks)
+    files = filter (glob "*.c"), x => stamp x != stamp (replace x, ".c", ".o");
+    if len files > 0, {
+        out = foreach files, {
+            run ...; #run c compiler for each file
+        }
+        run ...; #link all files in out 
+    }, else () #if/else in general should return unit.
+}
+
+task run{
+    runtask "build";
+    exec "./out";
+}

@@ -1,0 +1,17 @@
+head = stmt*
+stmt = decl | expr
+decl = "set" | "let" | "var" 
+assign = id (id ","?)* "=" expr ";"
+
+expr     = term {("+" | "-") term}
+term           = factor {("*" | "/" | "%") factor}
+factor         = number | identifier | "(" expr ")" | boolean
+
+boolean        = "true" | "false" | boolean_expr
+boolean_expr = expr ("and" | "or") expr
+
+number         = digit {digit}
+identifier     = letter {letter | digit}
+
+digit          = [0-9] 
+letter         = [A-Za-z]

@@ -1,0 +1,36 @@
+:hardbreaks:
+
+== Libraries
+
+- CURL (or equivalent)
+- GZip
+- Tar
+- JSON
+- TOML
+- FTP
+
+== Tech
+
+- Database
+- Website
+- CLI
+- Resolver
+
+
+== Payed Features
+
+- docker emulation
+- Github Actions support
+- Code verification
+- Built-in issue tracker
+- built-in forums
+- universal configuration
+- file archive 
+
+== Client 
+
+send request for package -> recieve package.json -> create dependecy graph -> resolve dependicies -> download artifacts -> extract
+
+== Server (free)
+
+recieve request -> check request count if true -> send package.json -> recieve artifact request -> send artifacts -> decrement request count for free tier
