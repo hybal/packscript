@@ -2,7 +2,7 @@ module lexer;
 import std::collections::list;
 import std::ascii;
 import std::io;
-
+import tunion;
 String[*] keyword = {"impl", "set", "let", "var", "interface", "import", "task"};
 
 enum TokenType
@@ -59,30 +59,22 @@ fault Lexing{
 struct Token (Printable)
 {
     TokenType type;
-    any token;
+    TagUnion token;
 }
 
-fn String Token.to_new_string(&self, Allocator allocator) @dynamic
+fn String Token.to_string(&self, Allocator allocator) @dynamic
 {
-    DString out = dstring::new(.allocator = allocator); defer out.free();
-    any tok = self.token;
-    switch(tok){
-        case String: {
-            out.appendf("{type: %s, token: ", self.type)!!;
-            out.appendf("%s", *anycast(tok, String))!!;
-            out.append("}");
-        }
-        default: out.appendf("{type: %s, token: %s}", self.type, tok)!!;
+    switch(self.token.tag){
+        case String.typeid: return string::new_format("{type: %s, token: %s}", self.type, self.token.get_val(String), allocator: allocator)!!;
+        default: return string::new_format("{type: %s, token: %s}", self.type, self.token, allocator: allocator);
     }
-    return out.copy_str(.allocator = allocator);
 }
 
-fn Token new_token(TokenType type, any token = null, String str = ""){
+fn Token new_token(TokenType type, TagUnion token = {}, String str = ""){
     Token* out = mem::malloc(Token.sizeof);
     out.type = type;
-    if(token == null && str.len > 0){
-        io::printn(str.copy());
-        out.token = any_make(str.copy(), String.typeid);
+    if(str.len > 0){
+        out.token = tunion::make(str);
     }else{
         out.token = token;
     }
@@ -99,43 +91,43 @@ fn Token[]! lex(String data)
         Token next_token;
         Char32 current_char = iter.next()!;
         switch OSW: (current_char){
-            case '*': next_token = new_token(STAR, .str = "*");
-            case '/': next_token = new_token(DIV, .str = "/");
-            case '-': next_token = new_token(MINUS, .str = "-");
-            case '+': next_token = new_token(PLUS, .str = "+");
-            case '%': next_token = new_token(MOD, .str = "%");
-            case '^': next_token = new_token(XOR, .str = "^");
-            case ':': next_token = new_token(COLON, .str = ":");
-            case ';': next_token = new_token(SEMICOLON, .str = ";");
-            case '(': next_token = new_token(LPAREN, .str = "(");
-            case ')': next_token = new_token(RPAREN, .str = ")");
-            case '{': next_token = new_token(LBRACE, .str = "{");
-            case '}': next_token = new_token(RBRACE, .str = "}");
-            case '[': next_token = new_token(LBRACKET, .str = "[");
-            case ']': next_token = new_token(RBRACKET, .str = "]");
-            case ',': next_token = new_token(COMMA, .str = ",");
-            case '.': next_token = new_token(DOT, .str = ".");
-            case '?': next_token = new_token(QUESTION, .str = "?");
+            case '*': next_token = new_token(STAR, str: "*");
+            case '/': next_token = new_token(DIV, str: "/");
+            case '-': next_token = new_token(MINUS, str: "-");
+            case '+': next_token = new_token(PLUS, str: "+");
+            case '%': next_token = new_token(MOD, str: "%");
+            case '^': next_token = new_token(XOR, str: "^");
+            case ':': next_token = new_token(COLON, str: ":");
+            case ';': next_token = new_token(SEMICOLON, str: ";");
+            case '(': next_token = new_token(LPAREN, str: "(");
+            case ')': next_token = new_token(RPAREN, str: ")");
+            case '{': next_token = new_token(LBRACE, str: "{");
+            case '}': next_token = new_token(RBRACE, str: "}");
+            case '[': next_token = new_token(LBRACKET, str: "[");
+            case ']': next_token = new_token(RBRACKET, str: "]");
+            case ',': next_token = new_token(COMMA, str: ",");
+            case '.': next_token = new_token(DOT, str: ".");
+            case '?': next_token = new_token(QUESTION, str: "?");
             case '=': {next_token = iter.has_next() && (iter.peek() ?? '\0') == '=' ? 
-                        {|iter.next()!!; return new_token(EQEQ, .str = "==");|} : 
+                        {|iter.next()!!; return new_token(EQEQ, str: "==");|} : 
                             (iter.has_next() && (iter.peek()!!) == '>' ? 
-                                {|iter.next()!!; return new_token(ARROW, .str = "=>");|} : 
-                                    {|return new_token(EQ, .str = "=");|});}
+                                {|iter.next()!!; return new_token(ARROW, str: "=>");|} : 
+                                    {|return new_token(EQ, str: "=");|});}
             case '!': next_token = iter.has_next() && (iter.peek() ?? '\0') == '=' ? 
-                {|iter.next()!!; return new_token(NEQ, .str = "!="); |} : 
-                {|return new_token(NOT, .str = "!");|};
+                {|iter.next()!!; return new_token(NEQ, str: "!="); |} : 
+                {|return new_token(NOT, str: "!");|};
             case '>': next_token = iter.has_next() && (iter.peek() ?? '\0') == '=' ? 
-                {|iter.next()!!; return new_token(GTEQ, .str = ">="); |} : 
-                {|return new_token(GT, .str = ">");|};
+                {|iter.next()!!; return new_token(GTEQ, str: ">="); |} : 
+                {|return new_token(GT, str: ">");|};
             case '<': next_token = iter.has_next() && (iter.peek() ?? '\0') == '=' ? 
-                {|iter.next()!!; return new_token(LTEQ, .str = "<="); |} : 
-                {|return new_token(LT, .str = "<");|};
+                {|iter.next()!!; return new_token(LTEQ, str: "<="); |} : 
+                {|return new_token(LT, str: "<");|};
             case '|': next_token = iter.has_next() && (iter.peek() ?? '\0') == '|' ? 
-                {|iter.next()!!; return new_token(LOR, .str = "||"); |} : 
-                {|return new_token(OR, .str = "|");|};
+                {|iter.next()!!; return new_token(LOR, str: "||"); |} : 
+                {|return new_token(OR, str: "|");|};
             case '&': next_token = iter.has_next() && (iter.peek() ?? '\0') == '&' ? 
-                {|iter.next()!!; return new_token(LAND, .str = "&&"); |} : 
-                {|return new_token(AND, .str = "&");|};
+                {|iter.next()!!; return new_token(LAND, str: "&&"); |} : 
+                {|return new_token(AND, str: "&");|};
 
             case '"': {
                 DString out;
@@ -146,7 +138,7 @@ fn Token[]! lex(String data)
                     out.append(current);
                 }
                 iter.next()!;
-                next_token = new_token(STR,.str = out.copy_str());
+                next_token = new_token(STR, str: out.copy_str());
             }
             case '\'': {
                 DString out;
@@ -157,7 +149,7 @@ fn Token[]! lex(String data)
                     out.append(current);
                 }
                 iter.next()!;
-                next_token = new_token(CHAR, .str = out.copy_str());
+                next_token = new_token(CHAR, str: out.copy_str());
 
             }
             case '0': {
@@ -195,7 +187,7 @@ fn Token[]! lex(String data)
                 }
                 if(current_char.is_digit() || current_char == '.'){
                     DString out;
-                    out.new_init(); defer out.free();
+                    out.new_init();
                     out.append(current_char);
                     Char32 current = current_char;
                     bool is_float = false;
@@ -210,10 +202,13 @@ fn Token[]! lex(String data)
                         
                     }
                     if(is_float){
-                        next_token = new_token(TokenType.FLOAT, any_make((void*)&&out.copy_str().to_double()!, double.typeid));
+                        next_token = new_token(TokenType.FLOAT, any_make(&&out.str_view().to_double()!, double.typeid));
                     }else{
-                        next_token = new_token(TokenType.INT, any_make((void*)&&out.copy_str().to_long()!, long.typeid));
+                        long num = out.str_view().to_long()!;
+                        next_token = new_token(TokenType.INT, any_make(&num, long.typeid));
+                        
                     }
+                    out.clear();
                 }
                 if(current_char.is_alpha() || current_char == '_'){
                     DString out;

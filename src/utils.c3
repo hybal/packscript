@@ -49,22 +49,56 @@ fn usz Tree.get_height(&self)
 fn String Tree.print_string(&self, usz level, Allocator allocator) @private
 {
     
-        if(self.get_children().len == 0) return self.data.to_new_string(.allocator = allocator);
+        if(self.get_children().len == 0) return self.data.to_string(allocator: allocator);
         DString out;
         out.temp_init(); defer out.free();
         for(int i = 5; i < level + 5; i++){
             out.append(" ");
         }
-        out.append(self.data.to_new_string(.allocator = allocator));
+        out.append(self.data.to_string(allocator: allocator));
         out.append("\n");
         foreach(Tree node : self.get_children()){
             out.append(node.print_string(level + 5, allocator));
         }
-        return out.copy_str(.allocator = allocator);
+        return out.copy_str(allocator: allocator);
     
 }
 
-fn String Tree.to_new_string(&self, Allocator allocator) @dynamic
+fn String Tree.to_string(&self, Allocator allocator) @dynamic
 {
     return self.print_string(0, allocator);
 }
+
+
+module tunion;
+
+struct TagUnion
+{
+    union
+    {
+        String s;
+        long l;
+        char c;
+    }
+    typeid tag;
+}
+
+macro TagUnion.get_type(&self)
+{
+    return self.tag;
+}
+
+macro TagUnion.get_val(self)
+{
+    $switch(self.typeid)
+        $case String.typeid: return self.s;
+        $case long.typeid: return self.l;
+        $case char.typeid: return self.c;
+    $endswitch
+}
+macro make(data)
+{
+    return TagUnion{data, $typeof(data).typeid};
+}
+
+

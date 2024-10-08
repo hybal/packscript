@@ -29,7 +29,7 @@ fn bool! TokenIterator.is_next(&self, TokenType... types)
 
 
 }
-fn Tree! parse(String code){
+fn Ast! parse(String code){
     Token[] tokens = lexer::lex(code)!;
     TokenIterator iter = tokens.to_iterator();
     Ast tree;
