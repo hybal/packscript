@@ -11,9 +11,9 @@ fn void! test_literal(){
     assert(lexer::lex("1.1")![0].type == TokenType.FLOAT);
     assert(lexer::lex("\"Hello\"")![0].type == TokenType.STR);
     assert(lexer::lex("\'H\'")![0].type == TokenType.CHAR);
-    assert(*(ulong*)lexer::lex("0xff")![0].token.ptr == 255);
-    assert(*(ulong*)lexer::lex("0o10")![0].token.ptr == 8);
-    assert(*(ulong*)lexer::lex("0b1")![0].token.ptr == 1);
+    assert(*(ulong*)lexer::lex("0xff")![0].token.get_val() == 255);
+    assert(*(ulong*)lexer::lex("0o10")![0].token.get_val() == 8);
+    assert(*(ulong*)lexer::lex("0b1")![0].token.get_val() == 1);
 }
 
 fn void! test_other(){
@@ -60,6 +60,5 @@ fn void! test_syntax(){
     assert(lexer::lex("=>")![0].type == TokenType.ARROW);
     assert(lexer::lex("^")![0].type == TokenType.XOR);
     assert(lexer::lex("?")![0].type == TokenType.QUESTION);
-
 }
 

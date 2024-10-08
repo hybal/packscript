@@ -64,10 +64,8 @@ struct Token (Printable)
 
 fn String Token.to_string(&self, Allocator allocator) @dynamic
 {
-    switch(self.token.tag){
-        case String.typeid: return string::new_format("{type: %s, token: %s}", self.type, self.token.get_val(String), allocator: allocator)!!;
-        default: return string::new_format("{type: %s, token: %s}", self.type, self.token, allocator: allocator);
-    }
+    return string::new_format("{type: %s, token: %s}", self.type, self.token);
+
 }
 
 fn Token new_token(TokenType type, TagUnion token = {}, String str = ""){
@@ -154,16 +152,16 @@ fn Token[]! lex(String data)
             }
             case '0': {
                 int base = 10;
-                Char32 range_a;
+                Char32 range_a = '0';
                 Char32 range_b;
                 bool is_complex = true;
                 switch INNER: (iter.peek()!) {
                     case 'X': nextcase;
-                    case 'x': {base = 16; range_a = '0'; range_b = 'F';}
+                    case 'x': {base = 16; range_b = 'F';}
                     case 'O': nextcase;
-                    case 'o': {base = 8; range_a = '0'; range_b = '7';}
+                    case 'o': {base = 8; range_b = '7';}
                     case 'B': nextcase;
-                    case 'b': {base = 2; range_a = '0'; range_b = '1';}
+                    case 'b': {base = 2; range_b = '1';}
                     default: is_complex = false;
                 }
                 if(is_complex){
@@ -175,7 +173,7 @@ fn Token[]! lex(String data)
                         current = iter.next()!;
                         out.append(current);
                     }
-                    next_token = new_token(TokenType.INT, any_make((void*)&&out.copy_str().to_ulong(base = base)!, ulong.typeid));
+                    next_token = new_token(TokenType.INT, token: tunion::make(out.str_view().to_long(base: base)))!;
                }else{
                     nextcase;
                }
@@ -202,10 +200,11 @@ fn Token[]! lex(String data)
                         
                     }
                     if(is_float){
-                        next_token = new_token(TokenType.FLOAT, any_make(&&out.str_view().to_double()!, double.typeid));
+                        double num = out.str_view().to_double()!;
+                        next_token = new_token(TokenType.FLOAT, token: tunion::make(num));
                     }else{
                         long num = out.str_view().to_long()!;
-                        next_token = new_token(TokenType.INT, any_make(&num, long.typeid));
+                        next_token = new_token(TokenType.INT, token: tunion::make(num));
                         
                     }
                     out.clear();
@@ -233,8 +232,8 @@ fn Token[]! lex(String data)
                         case "true" : out_type = TokenType.BOOL;
                         case "false" : out_type = TokenType.BOOL;
                     }
-                    next_token = new_token(out_type, any_make((void*)&&out.copy_str(), String.typeid));
-                }
+                    next_token = new_token(out_type, str: out.copy_str());
+                } 
                 
             }
 
