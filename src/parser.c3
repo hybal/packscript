@@ -3,13 +3,16 @@ import lexer;
 import utils::tree;
 import iterator;
 import std::collections::list;
-
+import std::io;
 def Ast = tree::Tree(<Token>);
 def TokenIterator = iterator::Iterator(<Token>);
 
 fault ParsingResult
 {
-    EXPECT
+    EXPECT,
+    FACTOR,
+    EXPR,
+    TERM
 }
 
 fn Token! TokenIterator.expect(&self, TokenType type)
@@ -29,51 +32,58 @@ fn bool! TokenIterator.is_next(&self, TokenType... types)
 
 
 }
-fn Ast! parse(String code){
+fn Ast*! parse(String code){
     Token[] tokens = lexer::lex(code)!;
     TokenIterator iter = tokens.to_iterator();
-    Ast tree;
-    return tree;
+    return expr(&iter)!;
 }
 
 
-fn void! expr(Ast ast, TokenIterator iterator)
+fn Ast*! expr(TokenIterator* iterator)
 {
-    term(ast, iterator)!;
-    if(iterator.is_next(TokenType.PLUS, TokenType.MINUS)!){
-        term(*ast.add_child(iterator.next()!), iterator)!;
-    }
-}
-
-fn void! term(Ast ast, TokenIterator iterator)
-{
-   factor(ast, iterator)!;
-   if(iterator.is_next(TokenType.STAR, TokenType.DIV, TokenType.MOD)!){
-        factor(*ast.add_child(iterator.next()!), iterator)!;
+   Ast* node = term(iterator)!;
+   while(iterator.is_next(TokenType.PLUS, TokenType.MINUS)!){
+        Ast* op = tree::new_node(<Token>)(iterator.next()!);
+        op.left = node;
+        op.right = term(iterator)!;
+        node = op;
    }
+   return node;
 }
 
-fn void! factor(Ast ast, TokenIterator iterator)
+fn Ast*! term(TokenIterator* iterator)
+{
+   Ast* node = factor(iterator)!;
+   while(iterator.is_next(TokenType.STAR, TokenType.DIV, TokenType.MOD)!){
+        Ast* op = tree::new_node(<Token>)(iterator.next()!);
+        op.right = factor(iterator)!;
+        op.left = node;
+        node = op;
+   }
+   return node;
+}
+
+fn Ast*! factor(TokenIterator* iterator)
 {
     if(iterator.is_next(TokenType.ID, TokenType.INT, TokenType.FLOAT)!){
-        ast.add_child(iterator.next()!);
-        return;
+        return tree::new_node(<Token>)(iterator.next()!);
     }
     if(iterator.is_next(TokenType.LPAREN)!){
-        (void)iterator.next()!;
-        expr(ast, iterator)!;
-        (void)iterator.expect(TokenType.RPAREN)!;
-        return;
+        iterator.next()!;
+        Ast* node = expr(iterator)!;
+        iterator.expect(TokenType.RPAREN)!;
+        return node;
     }
-    boolean(ast, iterator)!;
+    return ParsingResult.TERM?;
+    //boolean(ast, iterator)!;
     
 
 }
 
-fn void! boolean(Ast ast, TokenIterator iterator)
+fn void! boolean(Ast* ast, TokenIterator* iterator)
 {
     if(iterator.is_next(TokenType.BOOL)!){
-        ast.add_child(iterator.next()!);
+        ast.set_left(iterator.next()!);
         return;
     }
     boolean_expr(ast, iterator)!;
@@ -81,11 +91,11 @@ fn void! boolean(Ast ast, TokenIterator iterator)
 
 }
 
-fn void! boolean_expr(Ast ast, TokenIterator iterator)
+fn void! boolean_expr(Ast* ast, TokenIterator* iterator)
 {
-    expr(ast, iterator)!;
+    expr(iterator)!;
     if(iterator.is_next(TokenType.LAND, TokenType.LOR)!){
-       ast.add_child(iterator.next()!);
+       ast.set_right(iterator.next()!);
     }
 }
 

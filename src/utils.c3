@@ -13,53 +13,54 @@ fn bool String.eq(&self, String b){
 
 
 module utils::tree (<Type>);
-import std::collections::list;
 import std::io;
-def NodeList = list::List(<Tree>);
 struct Tree (Printable)
 {
     Type data;
-    NodeList children;
+    Tree* left;
+    Tree* right;
 }
 
-fn Tree* Tree.add_child(&self, Type data){
-        Tree* node = mem::malloc(Type.sizeof);
-        self.children.push(*node);
-        return node;
-}
-
-fn Tree[] Tree.get_children(&self){
-    return self.children.array_view();
-}
-
-fn bool Tree.has_children(&self){
-    return self.children.len() > 0;
-}
-
-fn usz Tree.get_height(&self)
+fn Tree* new_node(Type data, Allocator allocator = allocator::heap())
 {
-    if(self.get_children().len == 0) return 1;
-    usz out = 0;
-    foreach(Tree node : self.get_children()){
-        out = 1 + node.get_height();
-    }
-    return out;
+    Tree* node = allocator::alloc(allocator, Tree);
+    node.data = data;
+    node.left = null;
+    node.right = null;
+    return node;
+}
+fn Tree* Tree.create_child(&self, Type data, Allocator allocator = allocator::heap())
+{
+    return new_node(data, allocator: allocator);
+}
+fn Tree* Tree.set_left(&self, Type data, Allocator allocator = allocator::heap()) 
+{
+    self.left = new_node(data, allocator);
+    return self.left;
+}
+fn Tree* Tree.set_right(&self, Type data, Allocator allocator = allocator::heap()) 
+{
+    self.right = new_node(data, allocator);
+    return self.right;
+}
+fn bool Tree.is_leaf(&self)
+{
+    return self.left == null && self.right == null;
 }
 
 fn String Tree.print_string(&self, usz level, Allocator allocator) @private
 {
-    
-        if(self.get_children().len == 0) return self.data.to_string(allocator: allocator);
+        if(self == null) return "";
+        if(self.is_leaf()) return string::new_format("%s", self.data, allocator: allocator);
         DString out;
-        out.temp_init(); defer out.free();
+        out.new_init(); defer out.free();
         for(int i = 5; i < level + 5; i++){
             out.append(" ");
         }
         out.append(self.data.to_string(allocator: allocator));
         out.append("\n");
-        foreach(Tree node : self.get_children()){
-            out.append(node.print_string(level + 5, allocator));
-        }
+        out.append(self.left.print_string(level+5, allocator));
+        out.append(self.right.print_string(level+5, allocator));
         return out.copy_str(allocator: allocator);
     
 }

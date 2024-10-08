@@ -7,6 +7,7 @@ String[*] keyword = {"impl", "set", "let", "var", "interface", "import", "task"}
 
 enum TokenType
 {
+    HEAD,
     STR,
     INT,
     CHAR,
@@ -64,7 +65,7 @@ struct Token (Printable)
 
 fn String Token.to_string(&self, Allocator allocator) @dynamic
 {
-    return string::new_format("{type: %s, token: %s}", self.type, self.token);
+    return string::new_format("{type: %s, token: %s}", self.type, self.token, allocator: allocator);
 
 }
 
