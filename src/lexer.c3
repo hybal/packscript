@@ -36,6 +36,8 @@ enum TokenType
     LOR,
     LAND,
     LNOT,
+    LSH,
+    RSH,
     SEMICOLON,
     COLON,
     PLUS,
@@ -79,7 +81,17 @@ fn Token new_token(TokenType type, TagUnion token = {}, String str = ""){
     }
     return *out;
 }
-
+fn bool! StringIterator.next_if(&self, Char32... cs)
+{
+    if(!self.has_next()) return false;
+    foreach(Char32 c:cs) {
+        if(self.peek()! == c) {
+            self.next()!!;
+            return true;
+        }
+    }
+    return false;
+}
 def TokenList = list::List(<Token>);
 fn Token[]! lex(String data)
 {
@@ -107,27 +119,12 @@ fn Token[]! lex(String data)
             case ',': next_token = new_token(COMMA, str: ",");
             case '.': next_token = new_token(DOT, str: ".");
             case '?': next_token = new_token(QUESTION, str: "?");
-            case '=': {next_token = iter.has_next() && (iter.peek() ?? '\0') == '=' ? 
-                        {|iter.next()!!; return new_token(EQEQ, str: "==");|} : 
-                            (iter.has_next() && (iter.peek()!!) == '>' ? 
-                                {|iter.next()!!; return new_token(ARROW, str: "=>");|} : 
-                                    {|return new_token(EQ, str: "=");|});}
-            case '!': next_token = iter.has_next() && (iter.peek() ?? '\0') == '=' ? 
-                {|iter.next()!!; return new_token(NEQ, str: "!="); |} : 
-                {|return new_token(NOT, str: "!");|};
-            case '>': next_token = iter.has_next() && (iter.peek() ?? '\0') == '=' ? 
-                {|iter.next()!!; return new_token(GTEQ, str: ">="); |} : 
-                {|return new_token(GT, str: ">");|};
-            case '<': next_token = iter.has_next() && (iter.peek() ?? '\0') == '=' ? 
-                {|iter.next()!!; return new_token(LTEQ, str: "<="); |} : 
-                {|return new_token(LT, str: "<");|};
-            case '|': next_token = iter.has_next() && (iter.peek() ?? '\0') == '|' ? 
-                {|iter.next()!!; return new_token(LOR, str: "||"); |} : 
-                {|return new_token(OR, str: "|");|};
-            case '&': next_token = iter.has_next() && (iter.peek() ?? '\0') == '&' ? 
-                {|iter.next()!!; return new_token(LAND, str: "&&"); |} : 
-                {|return new_token(AND, str: "&");|};
-
+            case '=': next_token = iter.next_if('=')! ? new_token(EQEQ, str: "==") : (iter.next_if('>')! ? new_token(ARROW, str: "=>") : new_token(EQ, str: "="));
+            case '!': next_token = iter.next_if('=')! ? new_token(NEQ, str: "!=") : new_token(NOT, str: "!");
+            case '>': next_token = iter.next_if('>')! ? new_token(LSH, str: ">>") : (iter.next_if('=')! ? new_token(GTEQ, str: ">=") : new_token(GT, str: ">"));
+            case '<': next_token = iter.next_if('<')! ? new_token(RSH, str: "<<") : (iter.next_if('=')! ? new_token(LTEQ, str: "<=") : new_token(LT, str: "<"));
+            case '|': next_token = iter.next_if('|')! ? new_token(LOR, str: "||") : new_token(OR, str: "|");
+            case '&': next_token = iter.next_if('&')! ? new_token(LAND, str: "&&") : new_token(AND, str: "&");
             case '"': {
                 DString out;
                 out.new_init(); defer out.free();
@@ -148,38 +145,10 @@ fn Token[]! lex(String data)
                     out.append(current);
                 }
                 iter.next()!;
-                next_token = new_token(CHAR, str: out.copy_str());
+                next_token = new_token(CHAR, tunion::make(out.copy_str()[0]));
 
             }
-            case '0': {
-                int base = 10;
-                Char32 range_a = '0';
-                Char32 range_b;
-                bool is_complex = true;
-                switch INNER: (iter.peek()!) {
-                    case 'X': nextcase;
-                    case 'x': {base = 16; range_b = 'F';}
-                    case 'O': nextcase;
-                    case 'o': {base = 8; range_b = '7';}
-                    case 'B': nextcase;
-                    case 'b': {base = 2; range_b = '1';}
-                    default: is_complex = false;
-                }
-                if(is_complex){
-                    iter.next()!;
-                    Char32 current = iter.peek()!;
-                    DString out;
-                    out.new_init(); defer out.free();
-                    while(iter.has_next() && current.in_range(range_a, range_b)){
-                        current = iter.next()!;
-                        out.append(current);
-                    }
-                    next_token = new_token(TokenType.INT, token: tunion::make(out.str_view().to_long(base: base)))!;
-               }else{
-                    nextcase;
-               }
-                
-            }
+                            
             default:{
                 if(current_char.is_blank()){
                     continue OUTER;
@@ -190,7 +159,7 @@ fn Token[]! lex(String data)
                     out.append(current_char);
                     Char32 current = current_char;
                     bool is_float = false;
-                    while(iter.has_next() && (iter.peek()!.is_digit() || iter.peek()! == '.')){
+                    while(iter.has_next() && (iter.peek()!.is_digit() || iter.peek()! == '.' || iter.peek()! == 'o' || iter.peek()! == 'x' || iter.peek()! == 'b' || iter.peek()!.is_xdigit())){
                         current = iter.next()!;
                         if(current == '.' && !is_float){
                             is_float = true;
@@ -213,15 +182,15 @@ fn Token[]! lex(String data)
                 if(current_char.is_alpha() || current_char == '_'){
                     DString out;
                     out.new_init(); defer out.free();
-                    out.append(current_char);
                     Char32 current = current_char;
-                
-                    while(iter.has_next() && (current.is_alnum() || current == '_')){
+                    out.append(current);
+                    while(iter.has_next() && (iter.peek()!.is_alnum() || iter.peek()! == '_')){
                         current = iter.next()!;
                         out.append(current);
                     }
                     String out_str = out.copy_str();
                     TokenType out_type = TokenType.ID;
+                    bool out_bool = false;
                     switch(out_str){
                         case "impl": out_type = TokenType.IMPL;
                         case "interface": out_type = TokenType.INTERFACE;
@@ -230,10 +199,14 @@ fn Token[]! lex(String data)
                         case "let": out_type = TokenType.LET;
                         case "var": out_type = TokenType.VAR;
                         case "import": out_type = TokenType.IMPORT;
-                        case "true" : out_type = TokenType.BOOL;
+                        case "true" : {out_type = TokenType.BOOL; out_bool = true;}
                         case "false" : out_type = TokenType.BOOL;
                     }
-                    next_token = new_token(out_type, str: out.copy_str());
+                    if(out_type == TokenType.BOOL) {
+                        next_token = new_token(out_type, tunion::make(out_bool));
+                    }else {
+                        next_token = new_token(out_type, str: out_str);
+                    }
                 } 
                 
             }

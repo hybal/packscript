@@ -1,5 +1,8 @@
 module utils;
-import std::collections::list;
+import std::collections;
+import parser;
+import tunion;
+import lexer;
 fn bool String.eq(&self, String b){
 
     if(self.len != b.len) return false;
@@ -10,6 +13,53 @@ fn bool String.eq(&self, String b){
     }
     return true;
 }
+
+fn long! String.eval_str(&self)
+{
+    Ast* out = parser::parse(*self)!;
+    return out.eval_ast();
+}
+def SymTab = map::HashMap(<String, long>);
+SymTab symbol_table;
+fn long! Ast.eval_ast(&self) {
+    symbol_table.new_init();
+    return self.eval();
+}
+fn long! Ast.eval(&self)
+{
+    if(self == null) return 0;
+    if(self.is_leaf()) {
+        if(self.data.type == TokenType.ID) return symbol_table[self.data.token.cast_to(String)];
+        return self.data.token.cast_to(long);
+    }
+    switch(self.data.type) {
+        case EQ: {
+            symbol_table[self.left.data.token.cast_to(String)] = self.right.eval()!;
+            return 0;
+        }
+        case PLUS: return self.left.eval() + self.right.eval();
+        case MINUS: return self.right == null ? -self.left.eval()! : self.left.eval() - self.right.eval();
+        case STAR: return self.left.eval() * self.right.eval();
+        case DIV: return self.left.eval() / self.right.eval();
+        case MOD: return self.left.eval() % self.right.eval();
+        case GT: return self.left.eval()! > self.right.eval()! ? 1 : 0;
+        case LT: return self.left.eval()! < self.right.eval()! ? 1 : 0;
+        case GTEQ: return self.left.eval()! >= self.right.eval()! ? 1 : 0;
+        case LTEQ: return self.left.eval()! <= self.right.eval()! ? 1 : 0;
+        case EQEQ: return self.left.eval()! == self.right.eval()! ? 1 : 0;
+        case NEQ: return self.left.eval()! != self.right.eval()! ? 1 : 0;
+        case LAND: return self.left.eval()! && self.right.eval()! ? 1 : 0;
+        case LOR: return self.left.eval()! || self.right.eval()! ? 1 : 0;
+        case NOT: return !self.left.eval()! ? 1 : 0;
+        case AND: return self.left.eval() & self.right.eval();
+        case OR: return self.left.eval() | self.right.eval();
+        case XOR: return self.left.eval() ^ self.right.eval();
+        case LSH: return self.left.eval() << self.right.eval();
+        case RSH: return self.left.eval() >> self.right.eval();
+        default: return 0;
+    }
+}
+
 
 
 module utils::tree (<Type>);
@@ -48,26 +98,28 @@ fn bool Tree.is_leaf(&self)
     return self.left == null && self.right == null;
 }
 
-fn String Tree.print_string(&self, usz level, Allocator allocator) @private
+fn String Tree.print_string(&self, String prefix = "", bool is_last = true, Allocator allocator) @private
 {
         if(self == null) return "";
-        if(self.is_leaf()) return string::new_format("%s", self.data, allocator: allocator);
         DString out;
         out.new_init(); defer out.free();
-        for(int i = 5; i < level + 5; i++){
-            out.append(" ");
-        }
-        out.append(self.data.to_string(allocator: allocator));
-        out.append("\n");
-        out.append(self.left.print_string(level+5, allocator));
-        out.append(self.right.print_string(level+5, allocator));
+        out.append(prefix);
+        out.append(is_last ? "└── " : "├── ");
+        out.appendf("%s\n", self.data);
+        DString new_prefix_temp;
+        new_prefix_temp.new_init(); defer out.free();
+        new_prefix_temp.append(prefix);
+        new_prefix_temp.append(is_last ? "    " : "│   ");
+        String new_prefix = new_prefix_temp.copy_str(allocator: allocator);
+        out.append(self.left.print_string(new_prefix, self.is_leaf(), allocator));
+        out.append(self.right.print_string(new_prefix, !self.is_leaf(), allocator));
         return out.copy_str(allocator: allocator);
     
 }
 
 fn String Tree.to_string(&self, Allocator allocator) @dynamic
 {
-    return self.print_string(0, allocator);
+    return self.print_string(allocator: allocator);
 }
 
 
@@ -81,6 +133,7 @@ struct TagUnion (Printable)
         long l;
         char c;
         double d;
+        bool b;
     }
     typeid tag;
 }
@@ -93,6 +146,7 @@ fn String TagUnion.to_string(&self, Allocator allocator) @dynamic
         case long.typeid: return string::new_format("%s", self.data.l, allocator: allocator);
         case char.typeid: return string::new_format("%c", self.data.c, allocator: allocator);
         case double.typeid: return string::new_format("%s", self.data.d, allocator: allocator);
+        case bool.typeid: return string::new_format("%s", self.data.b, allocator: allocator);
         default: return "<Unknown>";
     }
 
@@ -112,8 +166,9 @@ fn void* TagUnion.get_val(&self)
         case long.typeid: return &self.data.l;
         case char.typeid: return &self.data.c;
         case double.typeid: return &self.data.d;
-        default: return null;
+        case bool.typeid: return &self.data.b;
     }
+    return null;
 }
 
 macro make(data)
@@ -124,9 +179,14 @@ macro make(data)
         $case long.typeid: out.data.l = data;
         $case char.typeid: out.data.c = data;
         $case double.typeid: out.data.d = data;
+        $case bool.typeid: out.data.b = data;
     $endswitch
     out.tag = $typeof(data).typeid;
     return out;
+}
+macro TagUnion.cast_to(self, $Type) 
+{
+    return *($Type*)self.get_val();
 }
 
 

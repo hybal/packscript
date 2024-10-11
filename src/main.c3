@@ -2,8 +2,18 @@ module package_manager;
 import std::io;
 import lexer;
 import parser;
-fn void! main(){
-    String test = "30123+2-123";
-    Ast* ast = parser::parse(test)!;
-    io::printn(ast);
+import utils;
+fn void! main(String[] args){
+    while(true){
+        io::print(">>> ");
+        String line = io::readline()!;
+        Ast*! tree = parser::parse(line);
+        if(catch e = tree) {
+            io::eprintfn("Parser failed with %s", e);
+            continue;
+        }
+        io::printn(tree);
+        io::printn(tree.eval())!!;
+
+    }
 }
