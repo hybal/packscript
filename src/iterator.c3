@@ -1,4 +1,4 @@
-module iterator (<Type>);
+module conical::iterator (<Type>);
 
 struct Iterator {
     Type[] data;

@@ -1,8 +1,8 @@
-module lexer;
+module conical::lexer;
 import std::collections::list;
 import std::ascii;
 import std::io;
-import tunion;
+import conical::tunion;
 String[*] keyword = {"impl", "set", "let", "var", "interface", "import", "task"};
 
 enum TokenType

@@ -1,5 +1,5 @@
 module test::parser;
-import parser;
+import conical::parser;
 
 fn void! test_arithmetic() @test
 {

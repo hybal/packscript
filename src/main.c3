@@ -1,8 +1,8 @@
-module package_manager;
+module conical::package_manager;
 import std::io;
-import lexer;
-import parser;
-import utils;
+import conical::lexer;
+import conical::parser;
+import conical::utils;
 fn void! main(String[] args){
     while(true){
         io::print(">>> ");

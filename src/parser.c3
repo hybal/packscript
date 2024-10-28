@@ -1,13 +1,12 @@
-module parser;
-import lexer;
-import utils::tree;
-import iterator;
+module conical::parser;
+import conical::lexer;
+import conical::utils::tree;
+import conical::iterator;
 import std::collections::list;
 import std::io;
 import std::collections::map;
-def Ast = tree::Tree(<Token>);
 def TokenIterator = iterator::Iterator(<Token>);
-
+def Ast = tree::Tree(<Token>);
 fault ParsingResult
 {
     EXPECT,

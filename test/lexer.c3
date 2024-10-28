@@ -1,6 +1,6 @@
 module lexer_test @test;
 import std::io;
-import lexer;
+import conical::lexer;
 fn void! test_literal(){
     assert(lexer::lex("12")![0].type == TokenType.INT);
     assert(lexer::lex("1.1")![0].type == TokenType.FLOAT);
