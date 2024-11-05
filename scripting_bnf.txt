@@ -1,17 +1,13 @@
 head = stmt*
-stmt = decl | expr
-decl = "set" | "let" | "var" 
-assign = id (id ","?)* "=" expr ";"
-
-expr     = term {("+" | "-") term}
-term           = factor {("*" | "/" | "%") factor}
-factor         = number | identifier | "(" expr ")" | boolean
-
-boolean        = "true" | "false" | boolean_expr
-boolean_expr = expr ("and" | "or") expr
-
-number         = digit {digit}
-identifier     = letter {letter | digit}
-
-digit          = [0-9] 
-letter         = [A-Za-z]
+stmt = assign | decl | call
+assign = ("set" | "let") ("(" params ")")? id "=" expr ";"
+decl = "obj" id "{" id ":" (type | decl) ","? "}"
+type = "String" | "number" | "double" | "char" | "date" | id
+call = id ("()" | expr) ("," ("()" | expr"))* ";"
+params = id (":" type)? ("," id ":" type)*
+expr = call | obj | mexpr | literal | "{" stmt "}"
+obj = "{" id "=" expr ("," id = "expr")* "}"
+mexpr = term (("+" | "-") term)*
+term = factor (("*" | "/") factor)*
+factor = literal | "(" expr ")"
+literal = id | number | string

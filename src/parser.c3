@@ -55,6 +55,17 @@ fn Ast*! stmt(TokenIterator* iterator)
             return eq;
         }
     }
+    while(iterator.is_next(TokenType.EQ)!) {
+        Token id = iterator.get()!;
+        if(iterator.is_next(TokenType.EQ)!) {
+            Ast* eq = tree::new_node(<Token>)(iterator.next())!;
+            eq.left = tree::new_node(<Token>)(id);
+            eq.right = boolean_expr(iterator)!;
+            iterator.expect(TokenType.SEMICOLON)!;
+            return eq;
+        }
+
+    }
     return boolean_expr(iterator)!;
 }
 

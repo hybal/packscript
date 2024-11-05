@@ -13,7 +13,13 @@ fn void! main(String[] args){
             continue;
         }
         io::printn(tree);
-        io::printn(tree.eval())!!;
+        long! val = tree.eval();
+        if(catch e = val) {
+            io::eprintfn("Eval failed with %s", e);
+            continue;
+        }
+        io::printn(val);
+
 
     }
 }

@@ -33,7 +33,7 @@ fn long! Ast.eval(&self)
 {
     if(self == null) return 0;
     if(self.is_leaf()) {
-        if(self.data.type == TokenType.ID) return symbol_table[self.data.token.cast_to(String)];
+        if(self.data.type == TokenType.ID) return symbol_table[self.data.token.cast_to(String)]!;
         return self.data.token.cast_to(long);
     }
     switch(self.data.type) {

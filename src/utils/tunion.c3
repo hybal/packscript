@@ -65,3 +65,30 @@ macro TagUnion.cast_to(self, $Type)
 }
 
 
+module conical::symtab;
+
+enum ConicalType
+{
+    CHAR,
+    INT,
+    STR,
+    DOUBLE
+}
+
+struct SymVal
+{
+    ConicalType type;
+    String id;
+    union value
+    {
+        char c;
+        int i;
+        String s;
+        double d;
+    }
+    usz scope;
+    usz size;
+    usz line;
+    ConicalType return_type;
+    SymVal[] parameters;
+}
