@@ -3,6 +3,8 @@ import std::io;
 import conical::lexer;
 import conical::parser;
 import conical::utils;
+import conical::errors::generator;
+import std::collections::map;
 fn void! main(String[] args){
     while(true){
         io::print(">>> ");
@@ -12,7 +14,7 @@ fn void! main(String[] args){
             io::eprintfn("Parser failed with %s", e);
             continue;
         }
-        io::printn(tree);
+        io::printn(*tree);
         long! val = tree.eval();
         if(catch e = val) {
             io::eprintfn("Eval failed with %s", e);
@@ -22,4 +24,5 @@ fn void! main(String[] args){
 
 
     }
+
 }

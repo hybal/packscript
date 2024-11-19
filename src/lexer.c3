@@ -59,10 +59,12 @@ enum TokenType
 fault Lexing{
     TOO_MANY_DECIMALS
 }
-struct Token (Printable)
+struct Token  //add line and col information
 {
     TokenType type;
     TagUnion token;
+    usz line;
+    usz col;
 }
 
 fn String Token.to_string(&self, Allocator allocator) @dynamic
@@ -71,6 +73,7 @@ fn String Token.to_string(&self, Allocator allocator) @dynamic
 
 }
 
+//this needs to be completely restructered, this is not sustainable
 fn Token new_token(TokenType type, TagUnion token = {}, String str = ""){
     Token* out = mem::malloc(Token.sizeof);
     out.type = type;
@@ -81,6 +84,8 @@ fn Token new_token(TokenType type, TagUnion token = {}, String str = ""){
     }
     return *out;
 }
+
+//will need to make an actual generic iterator with predicates (although will need to figure out how to make it do the same thing to avoid having to make a new predicate everytime)
 fn bool! StringIterator.next_if(&self, Char32... cs)
 {
     if(!self.has_next()) return false;
@@ -93,7 +98,7 @@ fn bool! StringIterator.next_if(&self, Char32... cs)
     return false;
 }
 def TokenList = list::List(<Token>);
-fn Token[]! lex(String data)
+fn Token[]! lex(String data) //make this better
 {
     StringIterator iter = data.iterator();
     TokenList tokens;
@@ -120,12 +125,12 @@ fn Token[]! lex(String data)
             case '.': next_token = new_token(DOT, str: ".");
             case '?': next_token = new_token(QUESTION, str: "?");
             case '=': next_token = iter.next_if('=')! ? new_token(EQEQ, str: "==") : (iter.next_if('>')! ? new_token(ARROW, str: "=>") : new_token(EQ, str: "="));
-            case '!': next_token = iter.next_if('=')! ? new_token(NEQ, str: "!=") : new_token(NOT, str: "!");
+            case '!': next_token = iter.next_if('=')! ? new_token(NEQ, str: "!=") : new_token(NOT, str: "!"); //ternary exp are not very readable, but are terse.
             case '>': next_token = iter.next_if('>')! ? new_token(LSH, str: ">>") : (iter.next_if('=')! ? new_token(GTEQ, str: ">=") : new_token(GT, str: ">"));
             case '<': next_token = iter.next_if('<')! ? new_token(RSH, str: "<<") : (iter.next_if('=')! ? new_token(LTEQ, str: "<=") : new_token(LT, str: "<"));
             case '|': next_token = iter.next_if('|')! ? new_token(LOR, str: "||") : new_token(OR, str: "|");
-            case '&': next_token = iter.next_if('&')! ? new_token(LAND, str: "&&") : new_token(AND, str: "&");
-            case '"': {
+            case '&': next_token = iter.next_if('&')! ? new_token(LAND, str: "&&") : new_token(AND, str: "&"); //these could be clearer with helper functions.
+            case '"': { //need to add escape sequences and raw strings
                 DString out;
                 out.new_init(); defer out.free();
                 Char32 current = current_char;
@@ -151,7 +156,7 @@ fn Token[]! lex(String data)
                             
             default:{
                 if(current_char.is_blank()){
-                    continue OUTER;
+                    continue OUTER; //can be better
                 }
                 if(current_char.is_digit() || current_char == '.'){
                     DString out;
@@ -159,7 +164,7 @@ fn Token[]! lex(String data)
                     out.append(current_char);
                     Char32 current = current_char;
                     bool is_float = false;
-                    while(iter.has_next() && (iter.peek()!.is_digit() || iter.peek()! == '.' || iter.peek()! == 'o' || iter.peek()! == 'x' || iter.peek()! == 'b' || iter.peek()!.is_xdigit())){
+                    while(iter.has_next() && (iter.peek()!.is_digit() || iter.peek()! == '.' || iter.peek()! == 'o' || iter.peek()! == 'x' || iter.peek()! == 'b' || iter.peek()!.is_xdigit())){ //probably should figure out how to pass arbitrary functions as predicates
                         current = iter.next()!;
                         if(current == '.' && !is_float){
                             is_float = true;

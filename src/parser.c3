@@ -7,7 +7,7 @@ import std::io;
 import std::collections::map;
 def TokenIterator = iterator::Iterator(<Token>);
 def Ast = tree::Tree(<Token>);
-fault ParsingResult
+fault ParsingResult //better error handling
 {
     EXPECT,
     FACTOR,
@@ -16,7 +16,20 @@ fault ParsingResult
     PRIMARY
 }
 
-
+/* For rewrite: 
+struct ConicalState
+{
+    Scope* local_scope; //the current local scope
+    Scope* global_scope; //the global scope that is defined everywhere (for set)
+    String[] input_lines; //the input split into lines to allow for better error messages
+    Stack* error_stack; //the stack of errors that have occured
+    Stack* call_stack; //the "call" stack, used to create a traceback.
+    Ast* ast; //the current ast for the parser
+    ...etc
+}
+instead of using faults another form of errors should be used that allow for recovery
+will also need to figure out how to make it easier to catch and return errors (so you dont have 30 if statements just to catch various errors)
+*/
 fn Token! TokenIterator.expect(&self, TokenType type)
 {
     if(!self.has_next()) return IteratorResult.NO_MORE_ELEMENT?;
@@ -42,7 +55,7 @@ fn Ast*! parse(String code){
     return stmt(&iter)!;
 }
 
-fn Ast*! stmt(TokenIterator* iterator)
+fn Ast*! stmt(TokenIterator* iterator) //technically the only statement would be assignment and decleration
 {
     while(iterator.is_next(TokenType.SET)!) {
         iterator.next()!;

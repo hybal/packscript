@@ -1,8 +1,8 @@
 module conical::tunion;
 import std::io;
-struct TagUnion (Printable)
+struct TagUnion (Printable) //this can be made specefic
 {
-    union data
+    union data //can use an anonymous union
     {
         String s;
         long l;
@@ -10,7 +10,7 @@ struct TagUnion (Printable)
         double d;
         bool b;
     }
-    typeid tag;
+    typeid tag; //enum is better since it has fixed variants
 }
 
 fn String TagUnion.to_string(&self, Allocator allocator) @dynamic
@@ -75,20 +75,20 @@ enum ConicalType
     DOUBLE
 }
 
-struct SymVal
+struct SymVal //can be made better
 {
     ConicalType type;
     String id;
-    union value
+    union value //this is essentially the same as above
     {
         char c;
         int i;
         String s;
         double d;
     }
-    usz scope;
-    usz size;
+    usz scope; //scope probably needs to be more than a number, rust uses a struct with local scope map and a parent scope map
+    usz size; //this would be column
     usz line;
-    ConicalType return_type;
+    ConicalType return_type; //this can be made into an option
     SymVal[] parameters;
 }

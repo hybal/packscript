@@ -1,6 +1,6 @@
 module conical::utils::tree(<DType>);
 import std::io;
-struct Tree (Printable) @adhoc
+struct Tree (Printable) 
 {
     DType data;
     Tree* left;
