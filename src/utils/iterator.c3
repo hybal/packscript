@@ -3,10 +3,10 @@ module utils::iterator (<Type>);
 interface Iterator
 {
     fn Type! next();
-    fn Type! peek();
-    fn Type! get();
-    fn Type! peek_back();
-    fn Type! back();
+    fn Type! peek() @optional;
+    fn Type! get() @optional;
+    fn Type! peek_back() @optional;
+    fn Type! back() @optional;
     fn bool has_next();
 }
 
