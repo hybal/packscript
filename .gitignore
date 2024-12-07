@@ -3,3 +3,4 @@ bin/
 lib/
 *tags*
 testrun
+docs/*.html
