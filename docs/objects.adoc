@@ -1,0 +1,50 @@
+= Objects
+:hardbreaks:
+
+Objects in PackScript are data structures that are essentially hashmaps.
+They can be defined using curly braces ({}) and members are assigned using colons (:)
+[source, packscript]
+----
+let user = {
+    name: "John Smith",
+    age: 35,
+    email: "jsmith@example.com",
+    address: {
+        street: "123 Main Street",
+        state: "NY",
+        city: "New York"
+    }
+}
+----
+
+You can also create a _type_, which is just an object that can only have some specific members.
+The syntax is slightly different in that instead of values you have types (see [types]) 
+[source, packscript]
+----
+type Project {
+    id: str,
+    displayName: str,
+    author: str,
+    language: str,
+    version: number,
+}
+
+----
+
+Then to create a new object of that type you just write the name of the type before the braces.
+[source, packscript]
+----
+let example_project = Project {
+    id: "example",
+    displayName: "Example Project",
+    author: "ellipse12",
+    language: "packscript",
+    version: 1
+}
+----
+
+to access the individual members of an object you can use the dot (`.`) operator.
+[source, packscript]
+----
+print example_project.displayName
+----
