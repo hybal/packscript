@@ -39,8 +39,10 @@ There are a handful of builtin types and types defined in the standard library, 
 | A boolean value, either `true` or `false`. 
 
 | `any` 
-| This is the default type of everything in PackScript, it can be any type.
+| This is the default type of variables in PackScript, it can be any type.
 
+| `()`
+| This is the unit type, it is both a type and the value. This is what is returned when querying for a non-existent member variable in an object.
 |===
 
 To include an object as a type for a member, you can do:
@@ -70,13 +72,15 @@ add :: (int | double, int | double) -> int | double
 let add (a,b) = a + b
 ----
 
-You can also indicate an `optional` member by appending a question mark (?) to the end of the member.
+You can also indicate an `optional` member by appending a question mark (?) to the end of the member. It is just shorthand for indicating that a member can take `unit` (`()`).
 [source, packscript]
 ----
 type Optional {
     foo: int,
-    bar: str?, #this one is optional.
+    bar: str?, #this one is optional. It is equivalent to bar: str | ()
     cat: bool | int?, #so is this
 }
 ----
-If a parameter is *not* marked optional it is required to create a new instance of that type.
+If a parameter is not marked optional it is _required_ when creating a new instance of that type.
+
+
