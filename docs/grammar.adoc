@@ -18,17 +18,19 @@ Everything in here is subject to change
 `{expr, start, end}` is repeat expression for start-end times (inclusive)
 `"a"` is a literal
 
+
+
 ----
 
 program = stmt*
 
-stmt = decl | expr | comment
+stmt = decl | expr | comment | assignment
 
 comment = "#" {?}* newline
 
 expr = boolean
 
-decl = func_decl | var_decl
+decl = func_decl | var_decl | type_decl
 
 var_decl = ("set" | "let") id "=" expr+ newline
 
