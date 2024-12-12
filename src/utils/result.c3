@@ -21,13 +21,13 @@ fault ResultError
 }
 
 
-fn bool Result.is_some(&self) => self.side == Side.LEFT;
+fn bool Result.is_ok(&self) => self.side == Side.LEFT;
 fn bool Result.is_err(&self) => self.side == Side.RIGHT;
 
 
 fn String Result.to_string(&self, Allocator allocator) @dynamic
 {
-    if(self.is_some()) return string::format("Some(%s)", self.left_v, allocator: allocator);
+    if(self.is_ok()) return string::format("Some(%s)", self.left_v, allocator: allocator);
     return string::format("Err(%s)", self.right_v, allocator: allocator);
 }
 
@@ -36,7 +36,7 @@ fn String Result.to_string(&self, Allocator allocator) @dynamic
 
 macro Result Result.bind(self, callback) 
 {
-    if(self.is_some()) {
+    if(self.is_ok()) {
         return make_some(callback(self.left_v));
     }
     return self;
