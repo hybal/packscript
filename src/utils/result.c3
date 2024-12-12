@@ -21,16 +21,14 @@ fault ResultError
 }
 
 
-fn bool Result.is_left(&self) => self.side == Side.LEFT;
-fn bool Result.is_right(&self) => self.side == Side.RIGHT;
+fn bool Result.is_some(&self) => self.side == Side.LEFT;
+fn bool Result.is_err(&self) => self.side == Side.RIGHT;
 
-macro make_left(value) => Result {.side = LEFT, .left_v = value};
-macro make_right(value) => Result {.side = RIGHT, .right_v = value};
 
 fn String Result.to_string(&self, Allocator allocator) @dynamic
 {
-    if(self.is_left()) return string::format("Left(%s)", self.left_v, allocator: allocator);
-    return string::format("Right(%s)", self.right_v, allocator: allocator);
+    if(self.is_some()) return string::format("Some(%s)", self.left_v, allocator: allocator);
+    return string::format("Err(%s)", self.right_v, allocator: allocator);
 }
 
 
@@ -38,16 +36,10 @@ fn String Result.to_string(&self, Allocator allocator) @dynamic
 
 macro Result Result.bind(self, callback) 
 {
-    if(self.is_left()) {
-        return make_left(callback(self.left_v));
+    if(self.is_some()) {
+        return make_some(callback(self.left_v));
     }
     return self;
-}
-
-macro Result Result.seq(self, callback, other)
-{
-    self.bind(callback);
-    return other.bind(callback);
 }
 
 def MonadicFunc = fn Result(Result);
@@ -55,3 +47,7 @@ fn Result Result.apply(&self, MonadicFunc func)
 {
     return func(*self);
 }
+
+macro make_some(value) => Result {.side = LEFT, .left_v = value};
+macro make_right(value) => Result {.side = RIGHT, .right_v = value};
+
