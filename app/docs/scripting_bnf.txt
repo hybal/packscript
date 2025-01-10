@@ -1,0 +1,13 @@
+head = stmt*
+stmt = assign | decl | call
+assign = ("set" | "let") ("(" params ")")? id "=" expr ";"
+decl = "obj" id "{" id ":" (type | decl) ","? "}"
+type = "String" | "number" | "double" | "char" | "date" | "any" | id //types are general since its interpreted; any is there to indicate that it is specefically no type.
+call = id ("()" | expr) ("," ("()" | expr"))* ";"
+params = id (":" type)? ("," id ":" type)*
+expr = call | obj | mexpr | literal | "{" stmt "}"
+obj = "{" id "=" expr ("," id = "expr")* "}"
+mexpr = term (("+" | "-") term)*
+term = factor (("*" | "/") factor)* //add other boolean and bitwise ops
+factor = literal | "(" expr ")"
+literal = id | number | string

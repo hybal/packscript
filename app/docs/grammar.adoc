@@ -1,0 +1,82 @@
+= PackScript Grammar
+:hardbreaks:
+
+
+[NOTE]
+Everything in here is subject to change
+
+.Key
+====
+
+`+` is one or more
+`*` is zero or more
+`?` is zero or one
+`|` is either or
+`[]` is a character class that can include ranges of characters
+`{?}` is any character 
+`{expr, count}` is repeat expression for 0-count times
+`{expr, start, end}` is repeat expression for start-end times (inclusive)
+`"a"` is a literal
+
+
+
+----
+
+program = stmt*
+
+stmt = decl | expr | comment | assignment
+
+comment = "#" {?}* newline
+
+expr = boolean
+
+decl = func_decl | var_decl | type_decl
+
+var_decl = ("set" | "let") id "=" expr+ newline
+
+func_decl = ("set" | "let") id ("(" param_list ")")? "=" expr+ newline
+
+body = ("(" param_list ")" "->")? "{" stmt* "}"
+
+object = id? "{" (id ":" expr)? ("," id ":" expr)* "}"
+
+assignment = binary_operators? "=" boolean+ 
+
+boolean = comparison (">=" | "<=" | ">" | "<" | "!=" | "==" boolean)?
+
+comparison = additive ("+" | "-" comparison)?
+
+additive = bitwise ("%" | "/" | "*" additive)?
+
+bitwise = unary ("|" | "~" | "&" | "<<" | ">>" bitwise)?
+
+unary = "(" expr ")" | unary_operators? literal ("++" | "--")?
+
+binary_operators = "+" | "-" | "%" | "/" | "*"  | "|" | "~" | "&" | "<<" | ">>" 
+
+unary_operators = "-" | "+" | "!" | "~" | "&" | "^" | "*" | "++" | "--"
+
+literal = number | floating_point | string | char_literal | "true" | "false" | range | id | body | control | shell_func
+
+shell_func = "&"? ("!" | "!!") {?}+ newline
+
+param_list = id? ("," id)*
+
+number = [1-9] ([0-9]* | "_") | "0x" (hex_digit |  "_")+ | "0b" ([0-1] | "_")+ | "0o" ([0-7] | "_")+
+
+floating_point = number? "." number?
+
+hex_digit = [0-9a-fA-F]
+
+string = "\"" (char | escape)* "\" | "`" (char | newline)* "`"
+
+char_literal = "'" (char | escape) "'"
+
+escape = "\\" ("n" | "r" | "t" | "v" | "b" | "f" | "\" | "'" | "\"" | "0" | "x" hex_digit hex_digit | "u" {hex_digit, 4, 4} | "U" {hex_digit, 8,8}
+
+newline = "\n" | "\r\n" | "\r"
+
+char = {?}
+
+id = [_a-zA-Z] [_a-zA-Z0-9]*
+----

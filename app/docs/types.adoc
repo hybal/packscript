@@ -1,0 +1,86 @@
+= Types
+:hardbreaks:
+
+Although PackScript is not a statically typed language, you can still annotate variables and functions with type to prevent some bugs related to duck typing.
+[source, packscript]
+----
+val :: int
+let val = 1234
+
+add :: (int, int) -> int
+let add (a,b) = a + b
+----
+
+== Objects
+
+Objects are likely the most common way that you will encounter types. This is because, when creating a new type, every member must be declared with a type.
+[source, packscript]
+----
+type Foo {
+    id: str
+}
+----
+
+There are a handful of builtin types and types defined in the standard library, the builtin types are as follows:
+[cols="2*"]
+|===
+| Keyword | Description
+
+| `int` 
+| A generic integer type, it can be any size.
+
+| `str`
+| A string
+
+| `double` 
+| A floating point number.
+
+| `bool`
+| A boolean value, either `true` or `false`. 
+
+| `any` 
+| This is the default type of variables in PackScript, it can be any type.
+
+| `()`
+| This is the unit type, it is both a type and the value. This is what is returned when querying for a non-existent member variable in an object.
+|===
+
+To include an object as a type for a member, you can do:
+[source, packscript]
+----
+type Foo {
+    sub: {
+        inner: str
+    }
+}
+----
+
+== Advanced Types
+
+You can also have more than just one type possibility by separating each type with `|`
+[source, packscript]
+----
+type Foo {
+    description: str | Path
+}
+----
+here description can either be a string or a Path, which is a type in the standard library.
+This applies to _any_ type, not just objects.
+[source, packscript]
+----
+add :: (int | double, int | double) -> int | double
+let add (a,b) = a + b
+----
+
+You can also indicate an `optional` member by appending a question mark (?) to the end of the member. It is just shorthand for indicating that a member can take `unit` (`()`).
+[source, packscript]
+----
+type Optional {
+    foo: int,
+    bar: str?, #this one is optional. It is equivalent to bar: str | ()
+    cat: bool | int?, #so is this
+}
+----
+If a parameter is not marked optional it is _required_ when creating a new instance of that type.
+
+
