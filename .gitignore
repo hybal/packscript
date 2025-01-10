@@ -8,4 +8,4 @@ docs/*.html
 
 # Added by cargo
 
-/target
+target/
