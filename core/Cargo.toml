@@ -1,0 +1,10 @@
+[package]
+name = "packscript"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+include_dir = "0.7.4"
+inventory = "0.3.17"
+macros = { version = "0.1.0", path = "../macros" }
+mlua = { version = "0.10.2", features = ["lua54", "vendored"] }
