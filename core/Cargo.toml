@@ -4,6 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+colored = "3.0.0"
+curl = { version = "0.4.47", features = ["static-curl"] }
 include_dir = "0.7.4"
 inventory = "0.3.17"
 macros = { version = "0.1.0", path = "../macros" }

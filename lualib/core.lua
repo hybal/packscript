@@ -11,11 +11,11 @@ end
 function vers_string(vers) 
         local pre = vers.prerelease and "-"..vers.prerelease or ""
         local met = vers.meta and "+"..vers.meta or ""
-        return string.format("%d.%d.%d", vers.major, vers.minor, vers.patch)..pre..met
+        return string.format("%d.%d.%d", vers.major or 0, vers.minor or 0, vers.patch or 0)..pre..met
 
 end
 
-function core.Version(--[[required]]major, --[[required]]minor, --[[required]]patch, --[[optional]]prerelease, --[[optional]]meta)
+function core.Version(major, minor, patch, prerelease, meta)
         local mt = {
                 __tostring = vers_string
         }
@@ -31,5 +31,12 @@ function core.Version(--[[required]]major, --[[required]]minor, --[[required]]pa
 
 end
 
+core.lang = {
+        C = "c",
+        Cpp = "cpp",
+        Rust = "rust",
+        Python = "py3",
+        Python2 = "py2",
+}
 
 return core

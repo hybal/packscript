@@ -10,7 +10,7 @@ struct Cli {
     ///Use a custom build script.
     #[arg(short, long, value_name="FILE")]
     file: Option<String>,
-    //cmd: String
+    cmd: Option<String>
 }
 
 
@@ -31,7 +31,7 @@ fn main() {
         Err(err) => panic!("could not read {}: {}", path.display(), err),
         Ok(_) => {} 
     }
-    match build(s) {
+    match build(s, cli.cmd) {
         Ok(_) => {},
         Err(msg) => panic!("build failed with: {}", msg)
     }

@@ -1,16 +1,18 @@
 use mlua::prelude::*;
 use macros::*;
-
 pub mod builtin;
 pub mod utils;
 create_registry!();
 
-pub fn build(src: String) -> LuaResult<()>{
+pub fn build(src: String, task: Option<String>) -> LuaResult<()>{
     let lua = Lua::new();
     register_all(&lua)?;
-    match lua.load(src).exec() {
-            Ok(_) => {},
-            Err(err) => println!("Error: {}", err)
-        }
+    info!("Reading script");
+    lua.load(src).exec()?;
+    if let Some(cmd) = task {
+        info!("Task [{}]", cmd);
+        lua.load(format!("runtask \"{}\"", cmd)).exec()?;
+    }
+    info!("Build Finished");
     Ok(())
 }
