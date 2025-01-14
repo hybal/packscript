@@ -10,9 +10,11 @@ struct Cli {
     ///Use a custom build script.
     #[arg(short, long, value_name="FILE")]
     file: Option<String>,
-    cmd: Option<String>
-}
+    cmd: Option<String>,
+    args: Option<Vec<String>>
+    
 
+}
 
 fn main() {
     let cli = Cli::parse();
@@ -31,7 +33,7 @@ fn main() {
         Err(err) => panic!("could not read {}: {}", path.display(), err),
         Ok(_) => {} 
     }
-    match build(s, cli.cmd) {
+    match build(s, cli.cmd, cli.args) {
         Ok(_) => {},
         Err(msg) => panic!("build failed with: {}", msg)
     }

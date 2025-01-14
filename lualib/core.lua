@@ -4,8 +4,8 @@ function core.task(task)
         tasks[task[1]] = task[2]
 end
 
-function core.runtask(id)
-        tasks[id]()
+function core.runtask(id, args)
+        tasks[id](args)
 end
 
 function vers_string(vers) 
