@@ -2,16 +2,10 @@
 project = {
         name = "Example Project",
         id = "example",
-        version = Version(1,0,0),
+        version = Version(1,0,1),
         language = lang.C,
-        system = {
-                arch = {"*"},
-                plat = {"*"}
-        }
 }
 
-task {"build", function(args)
-        print(args[1])
-end}
+
 
 

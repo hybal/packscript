@@ -23,17 +23,13 @@ pub fn setup_lib(lua: &Lua) -> Result<()> {
         }
     })?;
     searchers.push(custom_loader)?;
-    Ok(())
-
-}
-
-#[registry]
-pub fn setup_core(lua: &Lua) -> Result<()> {
-    let globals = lua.globals();
     let core: mlua::Table = lua.load(LUA_DIR.get_file("core.lua").unwrap().contents_utf8().unwrap()).eval()?;
     for pair in core.pairs::<String, Value>() {
         let (key,value) = pair?;
         globals.set(key, value)?;
     }
+
     Ok(())
 }
+
+
