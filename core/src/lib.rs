@@ -11,6 +11,7 @@ pub static CWD: Lazy<PathBuf> = Lazy::new(|| {
     std::env::current_dir().expect("Failed to get current working directory")
 });
 
+
 pub fn build(src: String, task: Option<String>, args: Option<Vec<String>>) -> LuaResult<()>{
     let lua = Lua::new();
     builtin::core::setup_lib(&lua)?; 

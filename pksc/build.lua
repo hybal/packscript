@@ -6,6 +6,4 @@ project = {
         language = lang.C,
 }
 
-for line in io.lines("../Cargo.toml") do
-        print(line)
-end
+print(cat "Cargo.toml")
