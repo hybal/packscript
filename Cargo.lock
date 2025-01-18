@@ -476,6 +476,7 @@ dependencies = [
  "inventory",
  "macros",
  "mlua",
+ "once_cell",
  "onig",
  "serde",
  "serde_ini",

@@ -1,8 +1,15 @@
 use mlua::prelude::*;
 use macros::*;
+use std::path::Path;
+use once_cell::sync::Lazy;
 pub mod builtin;
 pub mod utils;
+use std::path::PathBuf;
 create_registry!();
+
+pub static CWD: Lazy<PathBuf> = Lazy::new(|| {
+    std::env::current_dir().expect("Failed to get current working directory")
+});
 
 pub fn build(src: String, task: Option<String>, args: Option<Vec<String>>) -> LuaResult<()>{
     let lua = Lua::new();
