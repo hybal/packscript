@@ -48,6 +48,39 @@ function core.Version(major, minor, patch, prerelease, meta)
 
 end
 
+
+-- I/O
+
+function core.write(path, data)
+    local file = io.open(path, "w")
+    if file then
+        file:write(data)
+        file:close()
+    else
+        print("Failed to write or create file: \""..path.."\"")
+    end
+end
+function core.append(path, data)
+    local file = io.open(path, "a")
+    if file then
+        file:write(data)
+        file:close()
+    else
+        print("Failed to open or append file: \""..path.."\"")
+    end
+end
+
+
+-- Regex
+
+function re.freplace(path, pattern, replace)
+    local temp = cat(path)
+    if temp then
+        temp = re.replace(temp, pattern, replace)
+        write(path, temp)
+    end
+end
+
 -- Shell
 core.shell = require("shell")
 core.cat = core.shell.cat
@@ -107,7 +140,7 @@ function core.reduce(tbl, fn)
     return result
 end
 
-function core.discard(fn)
+function core.discard_index(fn)
     return function(i,v) return fn(v) end
 end
 

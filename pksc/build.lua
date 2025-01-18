@@ -6,6 +6,8 @@ project = {
         language = lang.C,
 }
 
-
-
-
+local test = cat "test.lua"
+print(test)
+re.freplace("test.lua", [[version = "([^"]*)"]], [[version = \1]])
+test = cat "test.lua"
+print(test)

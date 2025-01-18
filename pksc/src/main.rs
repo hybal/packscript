@@ -4,6 +4,8 @@ use std::io::prelude::*;
 use std::path::Path;
 use clap::{Parser, Subcommand};
 use packscript::*;
+pub mod utils;
+
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
 struct Cli {
@@ -33,8 +35,10 @@ fn main() {
         Err(err) => panic!("could not read {}: {}", path.display(), err),
         Ok(_) => {} 
     }
+    info!("Building Project");
     match build(s, cli.cmd, cli.args) {
         Ok(_) => {},
         Err(msg) => panic!("build failed with: {}", msg)
     }
+    info!("Finished");
 }

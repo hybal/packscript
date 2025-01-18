@@ -19,11 +19,24 @@
         }
     }
 }
-
-#[macro_export] macro_rules! info {
-    ($($args:tt)*) => {
-        use colored::*;
-        let out = format!($($args)*);
-        println!("{}", format!("=> {}", out).green());
+#[macro_export] macro_rules! set_table {
+    ($table:expr, $($name:expr => $value:expr),* $(,)?) => {
+        {
+            $(
+                $table.set($name, $value)?;
+            )*
+        }
     }
 }
+#[macro_export] macro_rules! set_table_functions {
+    ($lua:expr, $table:expr, $($name:expr => $value:expr),* $(,)?) => {
+        {
+            $(
+                $table.set($name, $lua.create_function($value)?)?;
+            )*
+        }
+    }
+}
+
+
+

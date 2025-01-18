@@ -6,11 +6,11 @@ create_registry!();
 
 pub fn build(src: String, task: Option<String>, args: Option<Vec<String>>) -> LuaResult<()>{
     let lua = Lua::new();
+    builtin::core::setup_lib(&lua)?; 
     register_all(&lua)?;
-    info!("Reading script");
+    builtin::core::setup_core(&lua)?;
     lua.load(src).exec()?;
     if let Some(cmd) = task {
-        info!("Task [{}]", cmd);
         if let Some(arguments) = args {
             let table = lua.create_sequence_from(arguments.into_iter())?;
             lua.globals().get::<mlua::Function>("runtask")?.call((cmd, table))?;
@@ -18,6 +18,5 @@ pub fn build(src: String, task: Option<String>, args: Option<Vec<String>>) -> Lu
             lua.load(format!("runtask \"{}\"", cmd)).exec()?;
         }
     }
-    info!("Build Finished");
     Ok(())
 }
