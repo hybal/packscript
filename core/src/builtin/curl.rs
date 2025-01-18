@@ -1,10 +1,9 @@
 use curl::easy::Easy;
-use crate::utils::*;
 use macros::*;
-use std::io::{self, Write};
+use std::io::{Write};
 use std::fs::File;
 use mlua::prelude::*;
-fn curl(lua: &Lua, (url, name): (String, String)) -> LuaResult<()> {
+fn curl(_lua: &Lua, (url, name): (String, String)) -> LuaResult<()> {
     let mut handle = Easy::new();
     let mut file = File::create(name)?;
     handle.url(&url).unwrap();

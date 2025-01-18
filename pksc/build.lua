@@ -6,4 +6,4 @@ project = {
         language = lang.C,
 }
 
-print(cat "Cargo.toml")
+print(cat "../Cargo.toml")

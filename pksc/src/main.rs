@@ -1,8 +1,7 @@
-use std::path::PathBuf;
 use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
-use clap::{Parser, Subcommand};
+use clap::Parser;
 use packscript::*;
 pub mod utils;
 

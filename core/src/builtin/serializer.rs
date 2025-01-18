@@ -1,6 +1,5 @@
 use crate::*;
-use macros::*;
-use mlua::{Lua, Table, Value, Result};
+use mlua::{Lua, Value, Result};
 fn process(lua: &Lua, value: Value) -> Result<Value> {
     match value {
         Value::Table(table) => {

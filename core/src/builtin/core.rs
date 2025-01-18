@@ -1,9 +1,6 @@
 use include_dir::{include_dir, Dir};
 use crate::*;
-use mlua::prelude::*;
-use mlua::{Lua, Result, Value, Function};
-use macros::*;
-use std::fs::File;
+use mlua::{Lua, Result, Value};
 use std::fs;
 use std::path::Path;
 pub static LUA_DIR: Dir = include_dir!("lualib");
@@ -23,17 +20,15 @@ pub fn setup_lib(lua: &Lua) -> Result<()> {
         }
     })?;
     let local_loader = lua.create_function(|lua, module_name: String| -> Result<Value> {
-        if let file = Path::new(&format!("{}.lua", module_name)) {
-            let source = fs::read_to_string(file)
-                .or_else(|_| Err(mlua::Error::RuntimeError(format!("Failed to load module '{}'", module_name))))?;
-            Ok(Value::Function(lua.load(source).set_name(&module_name).into_function()?))
-        } else {
-            Ok(Value::Nil)
-        }
+        let path = format!("{}.lua", module_name);
+        let file = Path::new(&path); 
+        let source = fs::read_to_string(file)
+            .or_else(|_| Err(mlua::Error::RuntimeError(format!("Failed to load module '{}'", module_name))))?;
+        Ok(Value::Function(lua.load(source).set_name(&module_name).into_function()?))
     })?;
     searchers.push(embedded_loader)?;
     searchers.push(local_loader)?;
-    
+
     Ok(())
 }
 
@@ -54,7 +49,7 @@ fn register(lua: &Lua) -> LuaResult<()> {
     Ok(())
 }
 
-fn build(lua: &Lua, (dir, task, args): (String, Option<String>, mlua::Variadic<String>)) -> LuaResult<()>{
+fn build(_lua: &Lua, (dir, task, args): (String, Option<String>, mlua::Variadic<String>)) -> LuaResult<()>{
     let source = fs::read_to_string(&Path::new(&dir).join("build.lua"))?;
     let vec = args.to_vec();
     crate::build(source, task, if vec.len() == 0 {None} else {Some(vec)})?;

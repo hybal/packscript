@@ -3,7 +3,8 @@ use macros::*;
 use crate::*;
 
 
-fn cd(lua: &Lua, path: String) -> LuaResult<()> {
+fn cd(_lua: &Lua, _path: String) -> LuaResult<()> {
+
 
     Ok(())
 }

@@ -1,6 +1,5 @@
 use macros::*;
 use mlua::prelude::*;
-use crate::utils::*;
 use crate::*;
 
 #[registry]

@@ -1,10 +1,6 @@
 use mlua::prelude::*;
 use macros::*;
 use crate::*;
-use std::fs::File;
-use std::fs::OpenOptions;
-use std::io::prelude::*;
-use std::path::Path;
 use onig::*;
 fn rmatch(lua: &Lua, (src, patt): (String, String)) -> LuaResult<mlua::Value> {
     let regex = Regex::new(&patt).map_err(|err| mlua::Error::RuntimeError(format!("Could not compile regex pattern: {}", err)))?;
@@ -22,7 +18,7 @@ fn rmatch(lua: &Lua, (src, patt): (String, String)) -> LuaResult<mlua::Value> {
     Ok(mlua::Value::Table(lua.create_sequence_from(out.iter())?))
 }
 
-fn replace(lua: &Lua, (src, patt, rep): (String, String, String)) -> LuaResult<String> {
+fn replace(_lua: &Lua, (src, patt, rep): (String, String, String)) -> LuaResult<String> {
     let regex = Regex::new(&patt).map_err(|err| mlua::Error::RuntimeError(format!("Could not compile regex pattern: {}", err)))?;
     let replaced = regex.replace_all(&src, |caps: &Captures| {
         let mut out = rep.clone();

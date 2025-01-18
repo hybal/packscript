@@ -49,8 +49,8 @@ pub fn harden_path(path: &str) -> Result<PathBuf, std::io::Error> {
     let canon = full_path.canonicalize()?;
     let initial_canon = crate::CWD.canonicalize()?;
     if canon.starts_with(&initial_canon) {
-        Ok(PathBuf::from(path))
+        Ok(PathBuf::from(full_path))
     } else {
-        Err(std::io::Error::new(std::io::ErrorKind::NotFound, format!("File not found \"{}\", files outside of the script directory cannot be accessed", path)))
+        Err(std::io::Error::new(std::io::ErrorKind::NotFound, format!("File not found \"{}\", files outside of the initial directory cannot be accessed", path)))
     }
 }
