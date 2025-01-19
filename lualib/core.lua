@@ -52,7 +52,7 @@ end
 -- I/O
 
 function core.write(path, data)
-    local file = io.open(path, "w")
+    local file = io.open(path, "wb")
     if file then
         file:write(data)
         file:close()
