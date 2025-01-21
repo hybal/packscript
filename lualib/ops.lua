@@ -27,34 +27,6 @@ function ops.unm(a)
     return -a
 end
 
-function ops.idiv(a, b)
-    return a // b
-end
-
-function ops.band(a,b)
-    return a & b
-end
-
-function ops.bor(a,b)
-    return a | b
-end
-
-function ops.bxor(a,b)
-    return a ~ b
-end
-
-function ops.bnot(a)
-    return ~a
-end
-
-function ops.shl(a,b)
-    return a << b
-end
-
-function ops.shr(a,b)
-    return a >> b
-end
-
 function ops.conct(a,b)
     return a .. b
 end

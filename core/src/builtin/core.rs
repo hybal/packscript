@@ -8,7 +8,7 @@ pub static LUA_DIR: Dir = include_dir!("lualib");
 pub fn setup_lib(lua: &Lua) -> Result<()> {
     let globals = lua.globals();
     let package: mlua::Table = globals.get("package")?;
-    let searchers: mlua::Table = package.get("searchers")?;
+    let searchers: mlua::Table = package.get("loaders")?;
     let embedded_loader = lua.create_function(|lua, module_name: String| -> Result<Value> {
         if let Some(file) = LUA_DIR.get_file(format!("{}.lua", module_name)) {
             let source = file
@@ -49,10 +49,10 @@ fn register(lua: &Lua) -> LuaResult<()> {
     Ok(())
 }
 
-fn build(_lua: &Lua, (dir, task, args): (String, Option<String>, mlua::Variadic<String>)) -> LuaResult<()>{
+fn build(_lua: &Lua, (dir, task, enable_jit, args): (String, Option<String>, Option<bool>, mlua::Variadic<String>)) -> LuaResult<()>{
     let source = fs::read_to_string(&Path::new(&dir).join("build.lua"))?;
     let vec = args.to_vec();
-    crate::build(source, task, if vec.len() == 0 {None} else {Some(vec)})?;
+    crate::build(source, task, if vec.len() == 0 {None} else {Some(vec)}, if let Some(val) = enable_jit {val} else {true})?;
     Ok(())
 }
 

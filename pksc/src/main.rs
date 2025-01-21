@@ -11,6 +11,9 @@ struct Cli {
     ///Use a custom build script.
     #[arg(short, long, value_name="FILE")]
     file: Option<String>,
+    #[arg(short, long)]
+    ///Toggle JIT compilation
+    jit: Option<bool>,
     cmd: Option<String>,
     args: Option<Vec<String>>
     
@@ -35,7 +38,7 @@ fn main() {
         Ok(_) => {} 
     }
     info!("Building Project");
-    match build(s, cli.cmd, cli.args) {
+    match build(s, cli.cmd, cli.args, if let Some(val) = cli.jit {val} else {true}) {
         Ok(_) => {},
         Err(msg) => panic!("build failed with: {}", msg)
     }
