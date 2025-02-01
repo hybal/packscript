@@ -2,6 +2,7 @@ use mlua::prelude::*;
 use macros::*;
 use crate::*;
 use onig::*;
+//TODO: make it find every match instead of just the first one on each line
 fn rmatch(lua: &Lua, (src, patt): (String, String)) -> LuaResult<mlua::Value> {
     let regex = Regex::new(&patt).map_err(|err| mlua::Error::RuntimeError(format!("Could not compile regex pattern: {}", err)))?;
     let mut out: Vec<mlua::Table> = vec![];
@@ -18,6 +19,7 @@ fn rmatch(lua: &Lua, (src, patt): (String, String)) -> LuaResult<mlua::Value> {
     Ok(mlua::Value::Table(lua.create_sequence_from(out.iter())?))
 }
 
+//TODO: support all types of backreferences
 fn replace(_lua: &Lua, (src, patt, rep): (String, String, String)) -> LuaResult<String> {
     let regex = Regex::new(&patt).map_err(|err| mlua::Error::RuntimeError(format!("Could not compile regex pattern: {}", err)))?;
     let replaced = regex.replace_all(&src, |caps: &Captures| {

@@ -24,7 +24,13 @@ fn main() {
     let cli = Cli::parse();
     let path = match &cli.file {
         Some(f) => Path::new(f),
-        None => Path::new("build.lua")
+        None => {
+            let mut out = Path::new("build.lua");
+            if !out.exists() {
+                out = Path::new("build.pksc");
+            }
+            out
+        }
     };
 
     let mut file = match File::open(&path) {

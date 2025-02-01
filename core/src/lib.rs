@@ -18,6 +18,7 @@ pub fn build(src: String, task: Option<String>, args: Option<Vec<String>>, enabl
     if !enable_jit {
         lua.load("jit.off(true, true)").exec()?;
     }
+    lua.load("if cat(IWD..\"/build.lock\") ~= nil then lock = from(cat(IWD..\"/build.lock\"), format.json) end").exec()?;
     lua.load(src).exec()?;
     if let Some(cmd) = task {
         if let Some(arguments) = args {
@@ -27,5 +28,6 @@ pub fn build(src: String, task: Option<String>, args: Option<Vec<String>>, enabl
             lua.load(format!("runtask \"{}\"", cmd)).exec()?;
         }
     }
+    lua.load("if next(lock) ~= nil then write(IWD..\"/build.lock\", into(lock, format.json)) end").exec()?;
     Ok(())
 }

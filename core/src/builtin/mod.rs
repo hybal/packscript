@@ -1,5 +1,8 @@
 pub mod native;
-pub mod curl;
+pub mod path;
+pub mod graph;
+pub mod compress;
+pub mod net;
 pub mod serializer;
 pub mod glob;
 pub mod regex;

@@ -16,6 +16,15 @@ fn process(lua: &Lua, value: Value) -> Result<Value> {
             }
             Ok(Value::Table(new_table))
         },
+        Value::UserData(data) => {
+            if let Ok(meta) = data.metatable().and_then(|mt| mt.get::<Value>("__serialize")) {
+                if let Value::Function(func) = meta {
+                    let serialized: Value = func.call(data.clone())?;
+                    return Ok(serialized);
+                }
+            }
+            Ok(mlua::Value::Table(lua.create_table()?))
+        },
         _ => Ok(value)
     }
 }

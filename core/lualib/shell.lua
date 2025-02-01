@@ -11,6 +11,8 @@ function shell.cat(path)
 
 end
 
-
+function shell.ls(path)
+    return glob((path or ".").."/*")
+end
 
 return shell

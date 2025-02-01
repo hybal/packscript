@@ -4,6 +4,7 @@ version.workspace = true
 edition.workspace = true
 authors.workspace = true
 description.workspace = true
+publish = false
 
 [lib]
 proc-macro = true

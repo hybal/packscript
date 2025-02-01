@@ -1,0 +1,9 @@
+= Todo
+:hardbreaks:
+
+- [ ] File manipulation
+- [ ] Error handling
+- [x] Using async/coroutines for I/O operations and Network
+- [ ] Network operations (websockets/REST)
+- [ ] Build Graph (need to figure out what to actually do with this)
+- [x] Regex w/ matches and find/replace

@@ -3,7 +3,7 @@ use crate::*;
 use mlua::{Lua, Result, Value};
 use std::fs;
 use std::path::Path;
-pub static LUA_DIR: Dir = include_dir!("lualib");
+pub static LUA_DIR: Dir = include_dir!("core/lualib");
 
 pub fn setup_lib(lua: &Lua) -> Result<()> {
     let globals = lua.globals();
@@ -44,7 +44,8 @@ pub fn setup_core(lua: &Lua) -> Result<()> {
 #[registry]
 fn register(lua: &Lua) -> LuaResult<()> {
     set_global_functions!(lua,
-        "build" => build
+        "build" => build,
+        "mkdirs" => |_, path: String| fs::create_dir_all(&path).map_err(|err| mlua::Error::external(err))
     );
     Ok(())
 }
