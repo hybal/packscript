@@ -2,7 +2,7 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
 use clap::Parser;
-use packscript::*;
+use pksc_core::*;
 pub mod utils;
 
 #[derive(Parser)]

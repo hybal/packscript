@@ -1,5 +1,5 @@
 use mlua::prelude::*;
-use macros::*;
+use pksc_macros::*;
 use once_cell::sync::Lazy;
 pub mod builtin;
 pub mod utils;

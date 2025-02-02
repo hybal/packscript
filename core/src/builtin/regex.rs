@@ -1,7 +1,7 @@
 //! Regex functions. 
 //! > **Warning:** The regex API is current unstable and is subject to change
 use mlua::prelude::*;
-use macros::*;
+use pksc_macros::*;
 use crate::*;
 use onig::*;
 //TODO: make it find every match instead of just the first one on each line

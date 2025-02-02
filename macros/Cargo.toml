@@ -1,11 +1,11 @@
 [package]
-name = "macros"
+name = "pksc_macros"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
 description.workspace = true
-publish = false
-
+license-file.workspace = true
+repository.workspace = true
 [lib]
 proc-macro = true
 

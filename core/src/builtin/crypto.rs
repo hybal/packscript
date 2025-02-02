@@ -1,5 +1,5 @@
 //! General cryptographic functions.
-use macros::*;
+use pksc_macros::*;
 use crate::*;
 use crate::builtin::path::*;
 use mlua::*;

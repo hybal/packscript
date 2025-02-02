@@ -1079,15 +1079,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "macros"
-version = "0.1.0"
-dependencies = [
- "inventory",
- "quote",
- "syn",
-]
-
-[[package]]
 name = "md-5"
 version = "0.10.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1287,35 +1278,9 @@ dependencies = [
 name = "packscript"
 version = "0.1.0"
 dependencies = [
- "adler",
- "adler32fast",
- "anyhow",
- "crc32fast",
- "digest",
- "flate2",
- "glob",
- "hex",
- "include_dir",
- "inventory",
- "macros",
- "md-5",
- "mlua",
- "once_cell",
- "onig",
- "petgraph",
- "reqwest",
- "serde",
- "serde_ini",
- "serde_json",
- "serde_yml",
- "sha2",
- "sha3",
- "tar",
- "tokio",
- "tokio-macros",
- "toml",
- "xxhash-rust",
- "zip",
+ "clap",
+ "colored",
+ "pksc_core",
 ]
 
 [[package]]
@@ -1386,12 +1351,47 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "953ec861398dccce10c670dfeaf3ec4911ca479e9c02154b3a215178c5f566f2"
 
 [[package]]
-name = "pksc"
+name = "pksc_core"
 version = "0.1.0"
 dependencies = [
- "clap",
- "colored",
- "packscript",
+ "adler",
+ "adler32fast",
+ "anyhow",
+ "crc32fast",
+ "digest",
+ "flate2",
+ "glob",
+ "hex",
+ "include_dir",
+ "inventory",
+ "md-5",
+ "mlua",
+ "once_cell",
+ "onig",
+ "petgraph",
+ "pksc_macros",
+ "reqwest",
+ "serde",
+ "serde_ini",
+ "serde_json",
+ "serde_yml",
+ "sha2",
+ "sha3",
+ "tar",
+ "tokio",
+ "tokio-macros",
+ "toml",
+ "xxhash-rust",
+ "zip",
+]
+
+[[package]]
+name = "pksc_macros"
+version = "0.1.0"
+dependencies = [
+ "inventory",
+ "quote",
+ "syn",
 ]
 
 [[package]]

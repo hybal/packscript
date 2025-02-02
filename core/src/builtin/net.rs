@@ -1,6 +1,6 @@
 //! Network Functions
 use std::collections::HashMap;
-use macros::*;
+use pksc_macros::*;
 use reqwest::Client;
 use tokio::runtime::Runtime;
 use mlua::prelude::*;

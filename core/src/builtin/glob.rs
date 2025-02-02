@@ -1,5 +1,5 @@
 //! Globbing support
-use macros::*;
+use pksc_macros::*;
 use crate::*;
 use glob::glob;
 use crate::builtin::path::*;

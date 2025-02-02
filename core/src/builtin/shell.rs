@@ -1,7 +1,7 @@
 //! Various shell functions
 use crate::builtin::path::*;
 use mlua::prelude::*;
-use macros::*;
+use pksc_macros::*;
 use crate::*;
 use std::env;
 use std::process::Command;

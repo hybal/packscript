@@ -1,10 +1,11 @@
 [package]
-name = "packscript"
+name = "pksc_core"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
 description.workspace = true
-publish = false
+license-file.workspace = true
+repository.workspace = true
 [dependencies]
 adler = "1.0.2"
 adler32fast = "1.1.0"
@@ -16,7 +17,7 @@ glob = "0.3.2"
 hex = "0.4.3"
 include_dir = "0.7.4"
 inventory = "0.3.17"
-macros = { version = "0.1.0", path = "../macros" }
+pksc_macros = { version = "0.1.0", path = "../macros" }
 md-5 = "0.10.6"
 mlua = { version = "0.10.2", features = ["anyhow", "async", "luajit", "send", "serialize", "vendored"] }
 once_cell = "1.20.2"

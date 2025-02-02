@@ -1,5 +1,5 @@
 //! Various builtin values
-use macros::*;
+use pksc_macros::*;
 use mlua::prelude::*;
 use crate::*;
 

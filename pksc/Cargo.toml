@@ -1,11 +1,16 @@
 [package]
-name = "pksc"
+name = "packscript"
 version.workspace = true
 authors.workspace = true
 description.workspace = true
+license-file.workspace = true
+repository.workspace = true
 edition = "2021"
 
+[[bin]]
+name = "pksc"
+path = "src/main.rs"
 [dependencies]
 clap = { version = "4.5.26", features = ["derive"] }
 colored = "3.0.0"
-packscript = { version = "0.1.0", path = "../core" }
+pksc_core = { version = "0.1.0", path = "../core" }
