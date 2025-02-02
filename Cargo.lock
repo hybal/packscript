@@ -1275,15 +1275,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "packscript"
-version = "0.1.0"
-dependencies = [
- "clap",
- "colored",
- "pksc_core",
-]
-
-[[package]]
 name = "parking_lot"
 version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1349,6 +1340,15 @@ name = "pkg-config"
 version = "0.3.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "953ec861398dccce10c670dfeaf3ec4911ca479e9c02154b3a215178c5f566f2"
+
+[[package]]
+name = "pksc"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "colored",
+ "pksc_core",
+]
 
 [[package]]
 name = "pksc_core"
