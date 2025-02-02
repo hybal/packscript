@@ -4,6 +4,7 @@ lib/
 *tags*
 testrun
 docs/*.html
+.*
 
 
 # Added by cargo
