@@ -4,7 +4,7 @@ use crate::*;
 use mlua::{Lua, Result, Value};
 use std::fs;
 use std::path::Path;
-pub static LUA_DIR: Dir = include_dir!("core/lualib");
+pub static LUA_DIR: Dir = include_dir!("lualib");
 
 pub fn setup_lib(lua: &Lua) -> Result<()> {
     let globals = lua.globals();
