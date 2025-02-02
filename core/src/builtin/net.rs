@@ -1,8 +1,15 @@
+//! Network Functions
 use std::collections::HashMap;
 use macros::*;
 use reqwest::Client;
 use tokio::runtime::Runtime;
 use mlua::prelude::*;
+
+/// Sends a GET request to `url` given `options`
+/// Returns: the fetched data
+/// Options is a table with two keys:
+/// `headers` => key-value pairs to send as headers
+/// `query` => key-value pairs for queries (equivalent to appending ?key=value to the url)
 async fn fetch(lua: Lua, (url, options): (String, Option<HashMap<String, mlua::Value>>)) -> LuaResult<mlua::Value>{
     let runtime = Runtime::new().map_err(|err| mlua::Error::external(format!("Failed to create Tokio runtime: {}", err)))?;
     runtime.block_on(async {

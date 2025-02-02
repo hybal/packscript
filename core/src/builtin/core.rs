@@ -1,3 +1,4 @@
+//! Setup functions for core.lua
 use include_dir::{include_dir, Dir};
 use crate::*;
 use mlua::{Lua, Result, Value};
@@ -45,11 +46,11 @@ pub fn setup_core(lua: &Lua) -> Result<()> {
 fn register(lua: &Lua) -> LuaResult<()> {
     set_global_functions!(lua,
         "build" => build,
-        "mkdirs" => |_, path: String| fs::create_dir_all(&path).map_err(|err| mlua::Error::external(err))
     );
     Ok(())
 }
 
+/// Deprecated
 fn build(_lua: &Lua, (dir, task, enable_jit, args): (String, Option<String>, Option<bool>, mlua::Variadic<String>)) -> LuaResult<()>{
     let source = fs::read_to_string(&Path::new(&dir).join("build.lua"))?;
     let vec = args.to_vec();

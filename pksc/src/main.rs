@@ -34,7 +34,7 @@ fn main() {
     };
 
     let mut file = match File::open(&path) {
-        Err(err) => panic!("could not open {}: {}", path.display(), err),
+        Err(_) => panic!("Could not find build file"),
         Ok(file) => file
     };
 

@@ -1,3 +1,4 @@
+//! General cryptographic functions.
 use macros::*;
 use crate::*;
 use crate::builtin::path::*;
@@ -10,11 +11,21 @@ use hex::encode;
 use xxhash_rust::xxh3::*;
 use adler32fast::*;
 
+/// Hashes the given file using the given format
+/// # Examples
+/// ```lua
+/// hash("example.txt", format.hash.md5)
+/// ```
 fn hash(lua: &Lua, (file, format): (LuaPath, String)) -> LuaResult<String> {
     let data = fs::read_to_string(file.0)?;
     Ok(hash_str(lua, (lua.create_string(data)?, format))?)
 }
 
+/// Hashes the given string using the given format
+/// # Examples
+/// ```lua
+/// hashs("Hello, World!", format.sha256)
+/// ```
 fn hash_str(lua: &Lua, (data, format): (String, String)) -> LuaResult<String> {
     let format_str = format.to_str()?;
     let data = data.display().to_string();
@@ -37,6 +48,11 @@ fn hash_str(lua: &Lua, (data, format): (String, String)) -> LuaResult<String> {
 
 }
 
+/// Caclulates a checksum from the given string using the given algorithm
+/// # Examples 
+/// ```lua
+/// checksums("Hello, World!", format.checksum.crc32)
+/// ```
 fn checksums(_: &Lua, (data, format): (String, String)) -> LuaResult<u64> {
     let format_str = format.to_str()?;
     let data = data.display().to_string();
@@ -53,6 +69,11 @@ fn checksums(_: &Lua, (data, format): (String, String)) -> LuaResult<u64> {
     Ok(out)
 }
 
+/// Calculates the checksum of the given file using the given algorithm
+/// # Examples
+/// ```lua
+/// checksum(path "example.txt", format.checksum.xxh3)
+/// ```
 fn checksum(lua: &Lua, (file, format): (LuaPath, String)) -> LuaResult<u64> {
     let data = fs::read_to_string(file.0)?;
     Ok(checksums(lua, (lua.create_string(data)?, format))?)

@@ -1,5 +1,8 @@
+//! Serialization/ Deserialization functions
 use crate::*;
 use mlua::{Lua, Value, Result};
+
+/// Utility function to recursivaly call `__serialize` on each pair
 fn process(lua: &Lua, value: Value) -> Result<Value> {
     match value {
         Value::Table(table) => {
@@ -29,6 +32,8 @@ fn process(lua: &Lua, value: Value) -> Result<Value> {
     }
 }
 
+/// Lua Name: `from`
+/// converts the given string into a lua table using the given table.
 fn deserialize(lua: &Lua, (string, format): (String, String)) -> LuaResult<Value> {
     let value: serde_json::Value = match &format as &str {
         "json" => serde_json::from_str(&string).unwrap(),
@@ -41,6 +46,8 @@ fn deserialize(lua: &Lua, (string, format): (String, String)) -> LuaResult<Value
     Ok(deserialized)
 }
 
+/// Lua Name: `into`
+/// converts the given lua value into a string using the given format
 fn serialize(lua: &Lua, (table, format):(mlua::Value, String)) -> LuaResult<String> {
     let processed_value = process(lua, table)?;
     let value = lua.from_value::<serde_json::Value>(processed_value.clone())?;
@@ -54,7 +61,7 @@ fn serialize(lua: &Lua, (table, format):(mlua::Value, String)) -> LuaResult<Stri
     Ok(serialized)
 }
 #[registry]
-pub fn register(lua: &Lua) -> LuaResult<()> {
+fn register(lua: &Lua) -> LuaResult<()> {
     set_global_functions!(lua,
         "into" => serialize,
         "from" => deserialize

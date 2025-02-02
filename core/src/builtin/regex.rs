@@ -1,3 +1,5 @@
+//! Regex functions. 
+//! > **Warning:** The regex API is current unstable and is subject to change
 use mlua::prelude::*;
 use macros::*;
 use crate::*;

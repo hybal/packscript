@@ -3,7 +3,7 @@
 
 == Needed for First Publish
 - [x] File manipulation
-- [ ] Custom error handling
+- [ ] Custom/better error handling
 - [x] Using async/coroutines for I/O operations and Network
 - [/] Network operations (websockets/REST in future update)
 - [/] Build Graph (need to figure out what to actually do with this)

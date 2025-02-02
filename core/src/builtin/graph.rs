@@ -1,3 +1,5 @@
+//! Graph API
+//! > **Warning:** The graph API is unstable and subject to change
 use macros::*;
 use petgraph::graph::NodeIndex;
 use mlua::prelude::*;

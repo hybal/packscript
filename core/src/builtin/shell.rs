@@ -1,25 +1,32 @@
+//! Various shell functions
+use crate::builtin::path::*;
 use mlua::prelude::*;
 use macros::*;
 use crate::*;
 use std::env;
-use std::path::Path;
 use std::process::Command;
 use std::fs;
-fn cd(_lua: &Lua, path: String) -> LuaResult<()> {
-    env::set_current_dir(Path::new(&path)).map_err(|err| mlua::Error::external(err))?;
+
+/// Changes the current directory to `path`
+fn cd(_lua: &Lua, path: LuaPath) -> LuaResult<()> {
+    env::set_current_dir(&path).map_err(|err| mlua::Error::external(err))?;
     Ok(())
 }
 
-fn pwd(_lua: &Lua, _: ()) -> LuaResult<String> {
+/// Returns the current working directatory 
+fn pwd(_lua: &Lua, _: ()) -> LuaResult<LuaPath> {
     let pwd = env::current_dir().map_err(|err| mlua::Error::external(err))?;
-    Ok(pwd.display().to_string())
+    Ok(LuaPath(pwd))
 }
 
+/// Sets the given enviroment variable to the given string
 fn setenv(_lua: &Lua, (var, val): (String, String)) -> LuaResult<()> {
     env::set_var(&var, &val);
     Ok(())
 }
 
+/// Executes the given command with the given arguments using a new shell. Returns the output
+/// instead of printing it
 fn exec(lua: &Lua, (cmd, args): (String, mlua::Variadic<String>)) -> LuaResult<mlua::Table> {
     let command = Command::new(&cmd)
         .args(args.into_iter())
@@ -33,19 +40,19 @@ fn exec(lua: &Lua, (cmd, args): (String, mlua::Variadic<String>)) -> LuaResult<m
 
 }
 
-fn cp(_: &Lua, (from, to): (String, String)) -> LuaResult<()> {
-    let src = Path::new(&from);
-    let dest = Path::new(&to);
-
-    if dest.is_dir() {
-        let dest_path = dest.join(src.file_name().unwrap());
-        fs::copy(src, dest_path).map_err(|err| mlua::Error::external(err))?;
+/// Copies a file or directatory to the destination
+fn cp(_: &Lua, (from, to): (LuaPath, LuaPath)) -> LuaResult<()> {
+    if to.is_dir() {
+        let dest_path = to.join(from.file_name().unwrap());
+        fs::copy(from, dest_path).map_err(|err| mlua::Error::external(err))?;
     } else {
         fs::copy(from, to).map_err(|err| mlua::Error::external(err))?;
     }
     Ok(())
 }
 
+/// Creates a directatory.
+/// Returns `true` on success and `false` otherwise.
 fn mkdir(_: &Lua, path: String) -> LuaResult<bool> {
     match fs::create_dir_all(&path) {
         Ok(_) => Ok(true),

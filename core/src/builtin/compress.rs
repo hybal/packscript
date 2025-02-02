@@ -1,3 +1,4 @@
+//! General functions for handling archive and compression formats
 use mlua::prelude::*;
 use crate::*;
 use flate2::read::GzDecoder;
@@ -7,6 +8,9 @@ use std::fs::{self, File};
 use std::io::{self, Write, Read};
 use crate::builtin::path::*;
 
+/// Extracts the given archive
+/// If the archive contains a single top-level folder then it returns the path to that
+/// otherwise it returns the original path
 fn extract_tar<R: Read>(mut archive: Archive<R>, path_out: PathBuf) -> anyhow::Result<PathBuf> {
     let mut out = None;
     for entry in archive.entries()? {
@@ -38,6 +42,11 @@ fn extract_tar<R: Read>(mut archive: Archive<R>, path_out: PathBuf) -> anyhow::R
     }
 }
 
+/// Extracts an archive using the given format.
+/// # Examples
+/// ```lua
+/// extract("example.tar.gz", "example", format.archive.tar_gz)
+/// ```
 fn extract(_: &Lua, (path_in, path_out, format): (LuaPath, LuaPath, String)) -> anyhow::Result<LuaPath> {
     if !path_out.exists() {
         fs::create_dir_all(&path_out)?;
@@ -97,7 +106,7 @@ fn extract(_: &Lua, (path_in, path_out, format): (LuaPath, LuaPath, String)) -> 
 
 
 #[registry]
-pub fn register(lua: &Lua) -> LuaResult<()> {
+fn register(lua: &Lua) -> LuaResult<()> {
     set_global_functions!(lua,
         "extract" => |lua, (input_path, output_path, format): (LuaPath, LuaPath, String)| {
             extract(lua, (input_path, output_path, format))

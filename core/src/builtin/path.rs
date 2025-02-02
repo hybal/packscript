@@ -6,13 +6,21 @@ use std::ops::Deref;
 use std::convert::*;
 use std::path::Path;
 
-
+/// Wraps a PathBuf to be used with lua functions
 pub struct LuaPath(pub PathBuf);
 impl IntoLua for LuaPath {
+    /// Converts the given LuaPath into a table with the values:
+    /// `extension` => the file extension
+    /// `name` => the file name (with extension)
+    /// `stem` => the file name (without extension)
+    /// `parent` => the parent path
+    /// `is_dir` => if this path is a directatory 
+    /// `abspath` => the canonicalized path
+    /// `path` => the original path
+    /// `absparent` => the canonicalized parent path
     fn into_lua(self, lua: &Lua) -> LuaResult<mlua::Value> {
         let out_table = lua.create_table()?;
         set_table!(out_table, 
-            "exists" => self.exists(),
             "extension" => self.extension().map(|ext| ext.to_os_string()),
             "name" => self.file_name().map(|ext| ext.to_os_string()),
             "stem" => self.file_stem().map(|ext| ext.to_os_string()),
@@ -27,6 +35,7 @@ impl IntoLua for LuaPath {
     }
 }
 
+/// Converts a String or Table into a LuaPath
 impl FromLua for LuaPath {
     fn from_lua(value: Value, _lua: &Lua) -> LuaResult<Self> {
         match value {
@@ -62,6 +71,14 @@ impl AsRef<Path> for LuaPath {
     }
 }
 
+/// Gets various statistics about the provided path.
+/// Returns a table with:
+/// `file_type` => one of "file", "dir", "symlink", or "unknown"
+/// `len` => the length of the file
+/// `readonly` => whether or not the file is readonly
+/// `modified` => the last-modified time in seconds from the unix epoch
+/// `accessed` => the last-accessed time in seconds from the unix epoch
+/// `create` => the time created in seconds from the unix epoch
 fn stat(lua: &Lua, path: LuaPath) -> LuaResult<mlua::Table> {
     let out = lua.create_table()?;
     let metadata = path.metadata()?;
@@ -86,6 +103,7 @@ fn stat(lua: &Lua, path: LuaPath) -> LuaResult<mlua::Table> {
     Ok(out)
 }
 
+/// Whether or not the given path exists
 fn exists(_: &Lua, path: String) -> LuaResult<bool> {
     Ok(Path::new(&path).exists())
 }

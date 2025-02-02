@@ -22,7 +22,7 @@ function tasks.build()
         cjson = extract("cJSON.tmp", "cJSON", format.archive.zip)
     end
     table.append(settings.srcs, path(cjson.abspath .. "/cJSON.c"))
-    table.append(settings.include_dirs, cjson)
+    table.append(settings.include_dirs, cjson.parent)
     local commands = {}
     local include_opt = {}
     for _, incl in pairs(settings.include_dirs) do
