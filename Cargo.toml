@@ -4,9 +4,10 @@ resolver = "2"
 
 [workspace.package]
 name = "packscript"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["ellipse12"]
 description = "A universal package manager"
 edition = "2021"
 license-file = "LICENSE"
 repository = "https://github.com/hybal/packscript"
+readme = "README.md"

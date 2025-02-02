@@ -5,6 +5,7 @@ authors.workspace = true
 description.workspace = true
 license-file.workspace = true
 repository.workspace = true
+readme.workspace = true
 edition = "2021"
 
 [dependencies]
