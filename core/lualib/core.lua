@@ -8,6 +8,33 @@ core.format = {
     ini = "ini",
 }
 
+core.format.hash = {
+    sha256 = "sha256",
+    sha512 = "sha512",
+    sha224 = "sha224",
+    sha512_224 = "sha512-224",
+    sha512_256 = "sha512-256",
+    sha384 = "sha384",
+    sha3_224 = "sha3-224",
+    sha3_256 = "sha3-256",
+    sha3_384 = "sha3-384",
+    sha3_512 = "sha3-512",
+    md5 = "md5"
+}
+
+core.format.checksum = {
+    crc32 = "crc32",
+    xxh3 = "xxh3",
+    adler32 = "adler32"
+}
+
+core.format.archive = {
+    tar = "tar",
+    zip = "zip",
+    gz = "gz",
+    tar_gz = "tar_gz"
+}
+
 core.lang = {
     C = "c",
     Cpp = "cpp",
@@ -197,7 +224,7 @@ end
 
 -- I/O
 
-function core.write(path, data)
+function core.write(data, path)
     local file = io.open(path, "wb")
     if file then
         file:write(data)
@@ -238,6 +265,7 @@ core.shell = require("shell")
 core.cat = core.shell.cat
 core.ls = core.shell.ls
 core.mktmp = core.shell.mktmp
+core.rm = core.shell.rm
 
 -- Iterators 
 
@@ -355,7 +383,6 @@ end
 function core.git_fetch(user, repo, branch, url_format)
     local form = url_format or "https://github.com/%s/%s/archive/refs/heads/%s.zip"
     local url = string.format(form, user, repo, branch or "main")
-    print(url)
     return fetch(url)
 end
 

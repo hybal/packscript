@@ -1,4 +1,5 @@
 pub mod native;
+pub mod crypto;
 pub mod path;
 pub mod graph;
 pub mod compress;

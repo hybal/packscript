@@ -6,7 +6,6 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 use petgraph::algo::toposort;
 use std::sync::{Arc, Mutex};
-use rayon::prelude::*;
 
 
 struct LuaGraph {
@@ -23,7 +22,7 @@ impl LuaGraph {
                     func.call::<()>(())?;
                 }
                 self.graph[node].set("is_dirty", false)?;
-                let neighbors = self.graph.neighbors(node);
+                let neighbors = self.graph.neighbors_directed(node, petgraph::Direction::Outgoing);
                 for neighbor in neighbors {
                     self.propagate_update(neighbor, updated_nodes)?;
                 }
@@ -34,7 +33,7 @@ impl LuaGraph {
     fn exec_parallel_updates(&mut self) -> LuaResult<()>{
         let updated_nodes = Arc::new(Mutex::new(HashSet::new()));
         let sorted_nodes = toposort(&self.graph, None).unwrap();
-        sorted_nodes.into_par_iter().for_each(|node| {
+        sorted_nodes.into_iter().for_each(|node| {
             let mut updated_nodes = updated_nodes.lock().unwrap();
             self.propagate_update(node, &mut updated_nodes).unwrap();
             

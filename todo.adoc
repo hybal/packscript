@@ -8,9 +8,8 @@
 - [/] Network operations (websockets/REST in future update)
 - [/] Build Graph (need to figure out what to actually do with this)
 - [x] Regex w/ matches and find/replace
-- [ ] General cleanup
-- [ ] Hash function with common algorithms
-- [ ] Checksum function
-- [ ] Split archive and compression into seperate functions
-- [ ] Command pools
-- [ ] File stats function
+- [ ] General cleanup/ Comment everything
+- [x] Hash function with common algorithms
+- [x] Checksum function
+- [x] add format specifiers to core.lua for extract and checksum
+- [x] File stats function

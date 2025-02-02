@@ -15,4 +15,8 @@ function shell.ls(path)
     return glob((path or ".").."/*")
 end
 
+function shell.rm(path)
+    return os.remove(path)
+end
+
 return shell
