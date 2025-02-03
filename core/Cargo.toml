@@ -6,6 +6,7 @@ authors.workspace = true
 description.workspace = true
 license-file.workspace = true
 repository.workspace = true
+readme = "README.md"
 [dependencies]
 adler = "1.0.2"
 adler32fast = "1.1.0"

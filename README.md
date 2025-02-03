@@ -8,3 +8,7 @@ Then run:
 ```sh
 $ cargo install packscript
 ```
+
+# Documentation
+
+You can find the WIP documentation [here](https://ellipse12.gitbook.io/packscript)
