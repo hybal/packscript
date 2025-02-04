@@ -4,7 +4,7 @@ use crate::*;
 use mlua::{Lua, Result, Value};
 use std::fs;
 use std::path::Path;
-pub static LUA_DIR: Dir = include_dir!("lualib");
+pub static LUA_DIR: Dir = include_dir!("core/lualib");
 
 pub fn setup_lib(lua: &Lua) -> Result<()> {
     let globals = lua.globals();
@@ -24,7 +24,7 @@ pub fn setup_lib(lua: &Lua) -> Result<()> {
         let path = format!("{}.lua", module_name);
         let file = Path::new(&path); 
         let source = fs::read_to_string(file)
-            .or_else(|_| Err(mlua::Error::RuntimeError(format!("Failed to load module '{}'", module_name))))?;
+            .map_err(|_| mlua::Error::RuntimeError(format!("Failed to load module '{}'", module_name)))?;
         Ok(Value::Function(lua.load(source).set_name(&module_name).into_function()?))
     })?;
     searchers.push(embedded_loader)?;
@@ -52,9 +52,9 @@ fn register(lua: &Lua) -> LuaResult<()> {
 
 /// Deprecated
 fn build(_lua: &Lua, (dir, task, enable_jit, args): (String, Option<String>, Option<bool>, mlua::Variadic<String>)) -> LuaResult<()>{
-    let source = fs::read_to_string(&Path::new(&dir).join("build.lua"))?;
+    let source = fs::read_to_string(Path::new(&dir).join("build.lua"))?;
     let vec = args.to_vec();
-    crate::build(source, task, if vec.len() == 0 {None} else {Some(vec)}, if let Some(val) = enable_jit {val} else {true})?;
+    crate::build(source, task, if vec.is_empty() {None} else {Some(vec)}, enable_jit.unwrap_or(true))?;
     Ok(())
 }
 

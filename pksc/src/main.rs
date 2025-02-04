@@ -33,18 +33,17 @@ fn main() {
         }
     };
 
-    let mut file = match File::open(&path) {
+    let mut file = match File::open(path) {
         Err(_) => panic!("Could not find build file"),
         Ok(file) => file
     };
 
     let mut s = String::new();
-    match file.read_to_string(&mut s) {
-        Err(err) => panic!("could not read {}: {}", path.display(), err),
-        Ok(_) => {} 
+    if let Err(err) = file.read_to_string(&mut s) {
+        panic!("could not read {}: {}", path.display(), err);
     }
     info!("Building Project");
-    match build(s, cli.cmd, cli.args, if let Some(val) = cli.jit {val} else {true}) {
+    match build(s, cli.cmd, cli.args, cli.jit.unwrap_or(true)) {
         Ok(_) => {},
         Err(msg) => panic!("build failed with: {}", msg)
     }

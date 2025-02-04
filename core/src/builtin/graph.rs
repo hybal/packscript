@@ -16,7 +16,7 @@ struct LuaGraph {
 }
 
 impl LuaGraph {
-    fn propagate_update(self: &Self, node: NodeIndex, updated_nodes: &mut HashSet<NodeIndex>) -> LuaResult<()> {
+    fn propagate_update(&self, node: NodeIndex, updated_nodes: &mut HashSet<NodeIndex>) -> LuaResult<()> {
         if !updated_nodes.contains(&node) {
             updated_nodes.insert(node);
             if self.graph[node].get::<bool>("is_dirty")? {

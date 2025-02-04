@@ -24,7 +24,7 @@ mlua = { version = "0.10.2", features = ["anyhow", "async", "luajit", "send", "s
 once_cell = "1.20.2"
 onig = {version = "6.4.0", default-features = false}
 petgraph = { version = "0.7.1", features = [] }
-reqwest = { version = "0.12.12", features = ["json"] }
+reqwest = { version = "0.12.12", features = ["json", "stream"] }
 serde = { version = "1.0.217", features = ["derive"] }
 serde_ini = "0.2.0"
 serde_json = "1.0.135"
@@ -37,3 +37,5 @@ tokio-macros = "2.5.0"
 toml = "0.8.19"
 xxhash-rust = { version = "0.8.15", features = ["xxh3"] }
 zip = "2.2.2"
+futures-util = "0.3.31"
+indicatif = "0.17.11"

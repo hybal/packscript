@@ -38,8 +38,8 @@
     }
 }
 
+/*
 use std::path::PathBuf;
-
 pub fn harden_path(path: &str) -> Result<PathBuf, std::io::Error> {
     let full_path = if path.starts_with("/") {
         crate::CWD.join(&path[1..])
@@ -54,3 +54,4 @@ pub fn harden_path(path: &str) -> Result<PathBuf, std::io::Error> {
         Err(std::io::Error::new(std::io::ErrorKind::NotFound, format!("File not found \"{}\", files outside of the initial directory cannot be accessed", path)))
     }
 }
+*/

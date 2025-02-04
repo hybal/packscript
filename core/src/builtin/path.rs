@@ -96,9 +96,9 @@ fn stat(lua: &Lua, path: LuaPath) -> LuaResult<mlua::Table> {
         },
         "len" => metadata.len(),
         "readonly" => metadata.permissions().readonly(),
-        "modified" => metadata.modified()?.duration_since(UNIX_EPOCH).map_err(|err| Error::external(err))?.as_secs(),
-        "accessed" => metadata.accessed()?.duration_since(UNIX_EPOCH).map_err(|err| Error::external(err))?.as_secs(),
-        "created" => metadata.created()?.duration_since(UNIX_EPOCH).map_err(|err| Error::external(err))?.as_secs(),
+        "modified" => metadata.modified()?.duration_since(UNIX_EPOCH).map_err(Error::external)?.as_secs(),
+        "accessed" => metadata.accessed()?.duration_since(UNIX_EPOCH).map_err(Error::external)?.as_secs(),
+        "created" => metadata.created()?.duration_since(UNIX_EPOCH).map_err(Error::external)?.as_secs(),
     );
     Ok(out)
 }

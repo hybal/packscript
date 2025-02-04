@@ -30,7 +30,7 @@ fn extract_tar<R: Read>(mut archive: Archive<R>, path_out: PathBuf) -> anyhow::R
             fs::create_dir_all(&dest_path)?;
         } else {
             if let Some(parent) = dest_path.parent() {
-                fs::create_dir_all(&parent)?;
+                fs::create_dir_all(parent)?;
             }
             entry.unpack(dest_path)?;
         }
@@ -110,7 +110,7 @@ fn register(lua: &Lua) -> LuaResult<()> {
     set_global_functions!(lua,
         "extract" => |lua, (input_path, output_path, format): (LuaPath, LuaPath, String)| {
             extract(lua, (input_path, output_path, format))
-                .map_err(|err| mlua::Error::external(err))
+                .map_err(mlua::Error::external)
         }
     );
     Ok(())

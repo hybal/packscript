@@ -6,11 +6,9 @@ use mlua::{Lua, Value, Result};
 fn process(lua: &Lua, value: Value) -> Result<Value> {
     match value {
         Value::Table(table) => {
-            if let Some(meta) = table.metatable().and_then(|mt| mt.get::<Value>("__serialize").ok()) {
-                if let Value::Function(func) = meta {
-                    let serialized: Value = func.call(table.clone())?;
-                    return process(lua, serialized);
-                }
+            if let Some(Value::Function(func)) = table.metatable().and_then(|mt| mt.get::<Value>("__serialize").ok()) {
+                let serialized: Value = func.call(table.clone())?;
+                return process(lua, serialized);
             }
             let new_table = lua.create_table()?;
             for pair in table.pairs::<Value, Value>() {
@@ -20,11 +18,9 @@ fn process(lua: &Lua, value: Value) -> Result<Value> {
             Ok(Value::Table(new_table))
         },
         Value::UserData(data) => {
-            if let Ok(meta) = data.metatable().and_then(|mt| mt.get::<Value>("__serialize")) {
-                if let Value::Function(func) = meta {
-                    let serialized: Value = func.call(data.clone())?;
-                    return Ok(serialized);
-                }
+            if let Ok(Value::Function(func)) = data.metatable().and_then(|mt| mt.get::<Value>("__serialize")) {
+                let serialized: Value = func.call(data.clone())?;
+                return Ok(serialized);
             }
             Ok(mlua::Value::Table(lua.create_table()?))
         },

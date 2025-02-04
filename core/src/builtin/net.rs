@@ -21,9 +21,8 @@ async fn fetch(lua: Lua, (url, options): (String, Option<HashMap<String, mlua::V
                     "headers" => {
                         if let mlua::Value::Table(headers) = value {
                             for pair in headers.pairs::<String, String>() {
-                                if let Ok((header_name, header_value)) = pair {
-                                    request = request.header(header_name, header_value);
-                                }
+                                let (header_name, header_value) = pair?;
+                                request = request.header(header_name, header_value);
                             }
                         }
                     },
@@ -31,9 +30,8 @@ async fn fetch(lua: Lua, (url, options): (String, Option<HashMap<String, mlua::V
                         if let mlua::Value::Table(query) = value {
                             let mut query_params = vec![];
                             for pair in query.pairs::<String, String>() {
-                                if let Ok((key, value)) = pair {
-                                    query_params.push((key, value));
-                                }
+                                let (key, value) = pair?;
+                                query_params.push((key, value));
                             }
                             request = request.query(&query_params);
                         }

@@ -18,7 +18,7 @@ use adler32fast::*;
 /// ```
 fn hash(lua: &Lua, (file, format): (LuaPath, String)) -> LuaResult<String> {
     let data = fs::read_to_string(file.0)?;
-    Ok(hash_str(lua, (lua.create_string(data)?, format))?)
+    hash_str(lua, (lua.create_string(data)?, format))
 }
 
 /// Hashes the given string using the given format
@@ -44,7 +44,7 @@ fn hash_str(lua: &Lua, (data, format): (String, String)) -> LuaResult<String> {
         v => return Err(Error::external(format!("Unkown hash algorithm: {}", v)))
 
     };
-    Ok(lua.create_string(out)?)
+    lua.create_string(out)
 
 }
 
@@ -76,7 +76,7 @@ fn checksums(_: &Lua, (data, format): (String, String)) -> LuaResult<u64> {
 /// ```
 fn checksum(lua: &Lua, (file, format): (LuaPath, String)) -> LuaResult<u64> {
     let data = fs::read_to_string(file.0)?;
-    Ok(checksums(lua, (lua.create_string(data)?, format))?)
+    checksums(lua, (lua.create_string(data)?, format))
 }
 
 #[registry]

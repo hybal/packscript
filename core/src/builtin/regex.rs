@@ -9,7 +9,7 @@ fn rmatch(lua: &Lua, (src, patt): (String, String)) -> LuaResult<mlua::Value> {
     let regex = Regex::new(&patt).map_err(|err| mlua::Error::RuntimeError(format!("Could not compile regex pattern: {}", err)))?;
     let mut out: Vec<mlua::Table> = vec![];
     for line in src.lines() {
-        if let Some(captures) = regex.captures(&line) {
+        if let Some(captures) = regex.captures(line) {
             let matches: Vec<String> = captures
                 .iter()
                 .flatten()
@@ -32,7 +32,7 @@ fn replace(_lua: &Lua, (src, patt, rep): (String, String, String)) -> LuaResult<
                 
             }
         }
-        return out;
+        out
     }).to_string();
     Ok(replaced)
 }
