@@ -15,8 +15,10 @@ function shell.ls(path)
     return glob((path or ".").."/*")
 end
 
-function shell.rm(path)
-    return os.remove(path)
+function shell.mv(from, to, overwrite)
+    cp(from, to)
+    rm(from, true)
+
 end
 
 return shell

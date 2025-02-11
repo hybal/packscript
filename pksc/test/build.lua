@@ -13,10 +13,11 @@ settings = {
 }
 
 
+
 function tasks.build() 
     mkdir(IWD.."/"..settings.out_dir)
     cdtmp()
-    local cjson = path "cJSON/cJSON-master"
+    local cjson = path "cJSON/cJSON-masters"
     if not exists("./cJSON") then
         write(git_fetch("DaveGamble", "cJSON", "master"), "cJSON.tmp")
         cjson = extract("cJSON.tmp", "cJSON", format.archive.zip)

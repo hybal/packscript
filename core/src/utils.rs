@@ -38,6 +38,17 @@
     }
 }
 
+
+pub fn native_error(lua: &mlua::Lua, msg: String) -> mlua::Error {
+    let debug = lua.inspect_stack(1);
+    if let Some(debug) = debug {
+    let source = debug.source();
+    mlua::Error::runtime(format!("{}:{}: {}", source.short_src.map(|val| val.to_string()).unwrap_or("unknown".to_string()), debug.curr_line(), msg)) 
+    } else {
+        mlua::Error::runtime(msg)
+    }
+}
+
 /*
 use std::path::PathBuf;
 pub fn harden_path(path: &str) -> Result<PathBuf, std::io::Error> {
@@ -46,6 +57,7 @@ pub fn harden_path(path: &str) -> Result<PathBuf, std::io::Error> {
     } else {
         crate::CWD.join(path)
     };
+
     let canon = full_path.canonicalize()?;
     let initial_canon = crate::CWD.canonicalize()?;
     if canon.starts_with(&initial_canon) {

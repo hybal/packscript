@@ -54,7 +54,13 @@ fn register(lua: &Lua) -> LuaResult<()> {
 fn build(_lua: &Lua, (dir, task, enable_jit, args): (String, Option<String>, Option<bool>, mlua::Variadic<String>)) -> LuaResult<()>{
     let source = fs::read_to_string(Path::new(&dir).join("build.lua"))?;
     let vec = args.to_vec();
-    crate::build(source, task, if vec.is_empty() {None} else {Some(vec)}, enable_jit.unwrap_or(true))?;
+    let options = crate::PkscOptions {
+        task: task,
+        args: Some(vec),
+        enable_jit: enable_jit.unwrap_or(true),
+        filepath: None
+    };
+    crate::build(source, options)?;
     Ok(())
 }
 

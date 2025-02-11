@@ -4,6 +4,7 @@ use std::path::Path;
 use clap::Parser;
 use pksc_core::*;
 pub mod utils;
+use colored::Colorize;
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
@@ -43,9 +44,15 @@ fn main() {
         panic!("could not read {}: {}", path.display(), err);
     }
     info!("Building Project");
-    match build(s, cli.cmd, cli.args, cli.jit.unwrap_or(true)) {
+    let options = PkscOptions {
+        task: cli.cmd,
+        args: cli.args,
+        enable_jit: cli.jit.unwrap_or(true),
+        filepath: Some(path.display().to_string())
+    };
+    match build(s, options) {
         Ok(_) => {},
-        Err(msg) => panic!("build failed with: {}", msg)
+        Err(msg) => {println!("{}", format!("{}", msg).bold().red()); return;}
     }
     info!("Finished");
 }

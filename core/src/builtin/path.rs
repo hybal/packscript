@@ -111,7 +111,7 @@ fn exists(_: &Lua, path: String) -> LuaResult<bool> {
 #[registry]
 fn register(lua: &Lua) -> LuaResult<()> {
     set_global_functions!(lua,
-        "path" => |_, path: String| Ok(LuaPath(PathBuf::from(path))),
+        "path" => |_, path: LuaPath| Ok(path),
         "stat" => stat,
         "exists" => exists
     );

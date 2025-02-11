@@ -60,6 +60,21 @@ fn mkdir(_: &Lua, path: String) -> LuaResult<bool> {
     }
 }
 
+/// Removes a file or directory.
+/// If `force` is true it will remove unempty directories otherwise they must be empty.
+fn rm(_: &Lua, (path, force): (LuaPath, Option<bool>)) -> LuaResult<()> {
+    if path.is_dir() {
+        if force.unwrap_or(false) {
+            fs::remove_dir_all(path)?;
+        } else {
+            fs::remove_dir(path)?;
+        }
+    } else {
+        fs::remove_file(path)?;
+    }
+    Ok(())
+}
+
 #[registry]
 pub fn register(lua: &Lua) -> LuaResult<()> {
     set_global_functions!(lua,
@@ -69,6 +84,7 @@ pub fn register(lua: &Lua) -> LuaResult<()> {
         "pwd" => pwd,
         "setenv" => setenv,
         "exec" => exec,
+        "rm" => rm
     );
     Ok(())
 }
