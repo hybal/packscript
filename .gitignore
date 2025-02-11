@@ -5,6 +5,7 @@ lib/
 testrun
 docs/*.html
 .*
+pksc/test
 
 
 # Added by cargo
