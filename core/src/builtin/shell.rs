@@ -82,9 +82,11 @@ pub fn register(lua: &Lua) -> LuaResult<()> {
         "mkdir" => mkdir,
         "cp" => cp,
         "pwd" => pwd,
-        "setenv" => setenv,
         "exec" => exec,
-        "rm" => rm
+        "rm" => rm,
+    );
+    set_table_functions!(lua, lua.globals().get::<mlua::Table>("os")?,
+        "setenv" => setenv,
     );
     Ok(())
 }

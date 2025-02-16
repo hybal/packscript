@@ -38,7 +38,6 @@
     }
 }
 
-
 pub fn native_error(lua: &mlua::Lua, msg: String) -> mlua::Error {
     let debug = lua.inspect_stack(1);
     if let Some(debug) = debug {

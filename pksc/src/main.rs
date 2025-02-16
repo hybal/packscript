@@ -1,9 +1,9 @@
 use std::fs::File;
+pub mod utils;
 use std::io::prelude::*;
 use std::path::Path;
 use clap::Parser;
 use pksc_core::*;
-pub mod utils;
 use colored::Colorize;
 
 #[derive(Parser)]

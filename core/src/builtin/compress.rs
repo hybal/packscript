@@ -7,11 +7,12 @@ use zip::read::ZipArchive;
 use std::fs::{self, File};
 use std::io::{self, Write, Read};
 use crate::builtin::path::*;
+use crate::utils::*;
 
 /// Extracts the given archive
 /// If the archive contains a single top-level folder then it returns the path to that
 /// otherwise it returns the original path
-fn extract_tar<R: Read>(mut archive: Archive<R>, path_out: PathBuf) -> anyhow::Result<PathBuf> {
+fn extract_tar<R: Read>(mut archive: Archive<R>, path_out: PathBuf) -> LuaResult<PathBuf> {
     let mut out = None;
     for entry in archive.entries()? {
         let mut entry = entry?;
@@ -47,7 +48,7 @@ fn extract_tar<R: Read>(mut archive: Archive<R>, path_out: PathBuf) -> anyhow::R
 /// ```lua
 /// extract("example.tar.gz", "example", format.archive.tar_gz)
 /// ```
-fn extract(_: &Lua, (path_in, path_out, format): (LuaPath, LuaPath, String)) -> anyhow::Result<LuaPath> {
+fn extract(lua: &Lua, (path_in, path_out, format): (LuaPath, LuaPath, String)) -> LuaResult<LuaPath> {
     if !path_out.exists() {
         fs::create_dir_all(&path_out)?;
     }
@@ -62,7 +63,7 @@ fn extract(_: &Lua, (path_in, path_out, format): (LuaPath, LuaPath, String)) -> 
             let mut decoder = GzDecoder::new(file);
             let output_file_name = path_in
                 .file_stem()
-                .ok_or_else(|| anyhow::anyhow!("Invalid file name"))?;
+                .ok_or_else(|| mlua::Error::runtime("Invalid file path"))?;
             let output_file_path = path_out.join(output_file_name);
             out_path = Some(output_file_path.clone());
             let mut output_file = File::create(output_file_path)?;
@@ -76,9 +77,9 @@ fn extract(_: &Lua, (path_in, path_out, format): (LuaPath, LuaPath, String)) -> 
             out_path = Some(extract_tar(archive, path_out.to_path_buf())?);
         },
         "zip" => {
-            let mut archive = ZipArchive::new(file)?;
+            let mut archive = ZipArchive::new(file).map_err(mlua::Error::external)?;
             for i in 0..archive.len() {
-                let mut file = archive.by_index(i)?;
+                let mut file = archive.by_index(i).map_err(mlua::Error::external)?;
                 let output_file_path = path_out.join(file.name());
                 if i == 0 && output_file_path.is_dir() {
                     out_path = Some(output_file_path.clone());
@@ -94,7 +95,7 @@ fn extract(_: &Lua, (path_in, path_out, format): (LuaPath, LuaPath, String)) -> 
                 }
             }
         },
-        v => return Err(anyhow::anyhow!(format!("Unknown compression format: {}", v))),
+        v => return Err(native_error(lua, format!("Unknown compression format: {}", v))),
     }
     if let Some(out) = out_path {
         Ok(LuaPath(out))

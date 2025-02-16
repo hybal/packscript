@@ -18,7 +18,9 @@ end
 function shell.mv(from, to, overwrite)
     cp(from, to)
     rm(from, true)
-
 end
 
+function os.appendenv(var, val)
+    os.setenv(var, os.getenv(var)..val)
+end
 return shell

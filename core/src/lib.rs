@@ -1,4 +1,5 @@
 use mlua::prelude::*;
+use mlua::chunk;
 use pksc_macros::*;
 use once_cell::sync::Lazy;
 pub mod builtin;
@@ -26,7 +27,11 @@ pub fn build(src: String, options: PkscOptions) -> LuaResult<()> {
     if !options.enable_jit {
         lua.load("jit.off(true, true)").exec()?;
     }
-    lua.load("if cat(IWD..\"/build.lock\") ~= nil then lock = from(cat(IWD..\"/build.lock\"), format.json) end").exec()?;
+    lua.load(chunk!{ 
+        if cat(IWD.."/build.lock") ~= nil then 
+            lock = from(cat(IWD.."/build.lock"), format.json) 
+        end
+    }).exec()?;
     lua.load(src).set_name(format!("@[{}]", options.filepath.unwrap_or("unknown".to_string()))).exec()?;
     if let Some(cmd) = options.task {
         if let Some(arguments) = options.args {
@@ -36,7 +41,11 @@ pub fn build(src: String, options: PkscOptions) -> LuaResult<()> {
             lua.load(format!("runtask \"{}\"", cmd)).exec()?;
         }
     }
-    lua.load("if next(lock) ~= nil then write(into(lock, format.json), IWD..\"/build.lock\") end").exec()?;
+    lua.load(chunk!{
+        if next(lock) ~= nil then 
+            write(into(lock, format.json), IWD.."/build.lock") 
+        end
+    }).exec()?;
 
     Ok(())
 }
