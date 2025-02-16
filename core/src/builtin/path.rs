@@ -7,6 +7,7 @@ use std::convert::*;
 use std::path::Path;
 
 /// Wraps a PathBuf to be used with lua functions
+#[derive(Debug)]
 pub struct LuaPath(pub PathBuf);
 impl IntoLua for LuaPath {
     /// Converts the given LuaPath into a table with the values:
