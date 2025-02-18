@@ -3,7 +3,6 @@ members = ["pksc", "core", "macros"]
 resolver = "2"
 
 [workspace.package]
-name = "packscript"
 version = "0.1.2"
 authors = ["ellipse12"]
 description = "A universal package manager"

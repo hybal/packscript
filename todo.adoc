@@ -3,13 +3,14 @@
 
 == Needed for First Publish
 - [x] File manipulation
-- [ ] Custom/better error handling
+- [x] Custom/better error handling
 - [x] Using async/coroutines for I/O operations and Network
 - [/] Network operations (websockets/REST in future update)
 - [/] Build Graph (need to figure out what to actually do with this)
 - [x] Regex w/ matches and find/replace
-- [ ] General cleanup/ Comment everything
+- [x] General cleanup/ Comment everything
 - [x] Hash function with common algorithms
 - [x] Checksum function
 - [x] add format specifiers to core.lua for extract and checksum
 - [x] File stats function
+- [ ] Finish Regex
